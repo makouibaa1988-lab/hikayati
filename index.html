@@ -1,0 +1,915 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>حكايتي</title>
+<meta name="description" content="قصص أطفال مقروءة ومسموعة، يكون طفلك بطلها باسمه وشكله.">
+<meta name="theme-color" content="#1C2A40">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Noto+Naskh+Arabic:wght@400;600&family=Tajawal:wght@400;500;700&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap">
+<style>
+body { margin: 0; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+</style>
+<style>
+/* Layout: a storybook app — top bar with tabs, one view at a time; the reader is a big illustrated page with the text beneath it. */
+:root {
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+  --bg: #EAF3F4;
+  --surface: #FFFFFF;
+  --surface-2: #F4F8F8;
+  --ink: #1C2A40;
+  --ink-soft: #55657A;
+  --line: #CCDCDD;
+  --saffron: #F2A93B;
+  --saffron-ink: #3B2500;
+  --teal: #1F8A7E;
+  --teal-soft: #D5EEEA;
+  --rose: #D9536A;
+  --hl: #FFE3A3;
+  --display: "Baloo Bhaijaan 2", "Tajawal", system-ui, sans-serif;
+  --story-ar: "Noto Naskh Arabic", "Tajawal", serif;
+  --story-lat: "Literata", Georgia, serif;
+  --ui: "Tajawal", system-ui, sans-serif;
+  --r: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #101826; --surface: #18233A; --surface-2: #1E2B45; --ink: #EEF3F8; --ink-soft: #A3B1C4;
+    --line: #2E3E5C; --saffron: #F5B24E; --saffron-ink: #2A1A00; --teal: #4CC2B2; --teal-soft: #173B3E; --rose: #F07A8E; --hl: #6B5216;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #101826; --surface: #18233A; --surface-2: #1E2B45; --ink: #EEF3F8; --ink-soft: #A3B1C4;
+  --line: #2E3E5C; --saffron: #F5B24E; --saffron-ink: #2A1A00; --teal: #4CC2B2; --teal-soft: #173B3E; --rose: #F07A8E; --hl: #6B5216;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--ui); font-size: 16px; line-height: 1.6; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 48px; }
+header.top { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding-block: 8px 16px; }
+.brand { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-weight: 800; font-size: 1.9rem; line-height: 1; }
+.brand svg { width: 40px; height: 40px; flex: none; }
+.brand small { display: block; font-family: var(--ui); font-weight: 500; font-size: .8rem; color: var(--ink-soft); margin-top: 4px; }
+nav.tabs { display: flex; gap: 6px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px; }
+nav.tabs button { border: 0; background: none; color: var(--ink-soft); font: 700 .95rem var(--ui); padding: 8px 16px; border-radius: 999px; cursor: pointer; }
+nav.tabs button[aria-selected="true"] { background: var(--ink); color: var(--bg); }
+.langs { margin-inline-start: auto; display: flex; gap: 4px; }
+.langs button { border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 700 .85rem var(--ui); padding: 6px 10px; border-radius: 10px; cursor: pointer; }
+.langs button[aria-pressed="true"] { background: var(--saffron); color: var(--saffron-ink); border-color: var(--saffron); }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, .card:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.25; }
+h2 { font-size: 1.6rem; }
+h3 { font-size: 1.15rem; }
+p { margin: 0; }
+.muted { color: var(--ink-soft); }
+.small { font-size: .875rem; }
+
+/* hero strip on library */
+.herostrip { display: flex; align-items: center; gap: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 16px; margin-bottom: 20px; }
+.herostrip .mini { width: 64px; height: 80px; flex: none; }
+.herostrip div { min-width: 0; }
+.chip { display: inline-block; font-size: .75rem; font-weight: 700; letter-spacing: .02em; background: var(--teal-soft); color: var(--teal); padding: 2px 10px; border-radius: 999px; }
+.btn { border: 0; cursor: pointer; font: 700 1rem var(--ui); padding: 10px 18px; border-radius: 12px; background: var(--ink); color: var(--bg); display: inline-flex; align-items: center; gap: 8px; }
+.btn.alt { background: var(--surface-2); color: var(--ink); border: 1px solid var(--line); }
+.btn.sun { background: var(--saffron); color: var(--saffron-ink); }
+.btn:disabled { opacity: .5; cursor: default; }
+.herostrip .btn { margin-inline-start: auto; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 18px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; cursor: pointer; display: flex; flex-direction: column; text-align: start; padding: 0; color: inherit; font: inherit; }
+.card svg { display: block; width: 100%; height: auto; aspect-ratio: 8 / 5; }
+.card .meta { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 4px; }
+.card h3 { font-size: 1.1rem; }
+.card:hover { border-color: var(--teal); }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.section-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; margin: 28px 0 14px; }
+.form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+label.f { display: flex; flex-direction: column; gap: 4px; font-weight: 700; font-size: .9rem; }
+input[type="text"], input[type="number"], select, textarea { font: 500 1rem var(--ui); color: var(--ink); background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; width: 100%; }
+textarea { resize: vertical; min-height: 64px; }
+.status { font-size: .9rem; color: var(--ink-soft); min-height: 1.4em; }
+.status.err { color: var(--rose); }
+
+/* hero builder */
+.builder { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 20px; align-items: start; }
+.preview { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); }
+.preview svg { width: 100%; height: auto; border-radius: var(--r); display: block; }
+.swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+.swatches button { width: 36px; height: 36px; border-radius: 50%; border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--line); cursor: pointer; }
+.swatches button[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--teal); }
+.pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.pills button { border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); font: 600 .9rem var(--ui); padding: 6px 12px; border-radius: 999px; cursor: pointer; }
+.pills button[aria-pressed="true"] { background: var(--teal); border-color: var(--teal); color: var(--surface); }
+.photo-box { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.photo-box img { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid var(--ink); background: var(--surface-2); }
+.privacy { background: var(--teal-soft); border-radius: 10px; padding: 10px 12px; font-size: .875rem; }
+input[type="range"] { width: 100%; accent-color: var(--teal); }
+.filelabel { position: relative; overflow: hidden; }
+.filelabel input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+/* reader */
+.reader { display: flex; flex-direction: column; gap: 14px; }
+.reader .pic { border-radius: var(--r); overflow: hidden; border: 1px solid var(--line); background: var(--surface); }
+.reader .pic svg { display: block; width: 100%; height: auto; }
+.page-text { font-family: var(--story-ar); font-size: clamp(1.25rem, 3.2vw, 1.65rem); line-height: 2; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 22px; min-height: 6.5em; }
+html:not([lang="ar"]) .page-text { font-family: var(--story-lat); line-height: 1.7; }
+.page-text span.w { border-radius: 6px; transition: background .12s; }
+.page-text span.w.on { background: var(--hl); }
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.dots { display: flex; gap: 6px; margin-inline: auto; }
+.dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); display: block; }
+.dots i.on { background: var(--saffron); }
+.voicebar { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; font-size: .9rem; }
+.voicebar select { width: auto; max-width: 100%; padding: 6px 10px; }
+.voicebar label { display: inline-flex; align-items: center; gap: 6px; }
+.voicebar input[type="range"] { width: 110px; }
+.reader-title { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.reader-title h2 { margin-inline-end: auto; }
+
+@media (max-width: 720px) {
+  .builder { grid-template-columns: 1fr; }
+  .preview { position: static; max-width: 420px; }
+  .brand { font-size: 1.6rem; }
+  .langs { margin-inline-start: 0; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M4 9c6-2 11-1 16 3 5-4 10-5 16-3v24c-6-2-11-1-16 3-5-4-10-5-16-3z" fill="var(--saffron)"/><path d="M20 12v24" stroke="var(--ink)" stroke-width="2.4"/><path d="M28 5l1.4 3 3.2.4-2.4 2.2.7 3.2-2.9-1.6-2.9 1.6.7-3.2-2.4-2.2 3.2-.4z" fill="var(--teal)"/></svg>
+      <div><span data-t="brand">حكايتي</span><small data-t="tagline">قصص يكون طفلك بطلها</small></div>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button role="tab" id="tab-library" data-view="library" aria-selected="true" data-t="tabLibrary">المكتبة</button>
+      <button role="tab" id="tab-hero" data-view="hero" aria-selected="false" data-t="tabHero">البطل</button>
+      <button role="tab" id="tab-reader" data-view="reader" aria-selected="false" data-t="tabReader">القراءة</button>
+    </nav>
+    <div class="langs" aria-label="Language">
+      <button data-lang="ar" aria-pressed="true">العربية</button>
+      <button data-lang="fr" aria-pressed="false">Français</button>
+      <button data-lang="en" aria-pressed="false">English</button>
+    </div>
+  </header>
+
+  <!-- LIBRARY -->
+  <section id="view-library">
+    <div class="herostrip">
+      <svg class="mini" id="mini-hero" viewBox="-60 -205 120 215" aria-hidden="true"></svg>
+      <div>
+        <p><strong id="strip-name"></strong> <span class="chip" id="strip-example" data-t="example">مثال</span></p>
+        <p class="muted small" data-t="stripHint">كل القصص تُكتب باسم البطل وتُرسم بشكله.</p>
+      </div>
+      <button class="btn alt" id="go-hero" data-t="editHero">تعديل البطل</button>
+    </div>
+
+    <div class="grid" id="story-grid"></div>
+
+    <div class="section-head">
+      <h2 data-t="newStoryTitle">قصة جديدة بالذكاء الاصطناعي</h2>
+      <p class="muted small" data-t="newStoryHint">يكتبها Claude بلغة القصة المختارة، وتُرسم مشاهدها تلقائياً.</p>
+    </div>
+    <form class="panel" id="ai-form">
+      <div class="form-row">
+        <label class="f"><span data-t="theme">فكرة القصة</span><input type="text" id="ai-theme" maxlength="140"></label>
+        <label class="f"><span data-t="value">القيمة التربوية</span>
+          <select id="ai-value"></select>
+        </label>
+        <label class="f"><span data-t="age">عمر الطفل</span><input type="number" id="ai-age" min="2" max="12" value="6"></label>
+      </div>
+      <div class="controls">
+        <button class="btn sun" id="ai-go" type="submit" data-t="write">اكتب القصة</button>
+        <button class="btn alt" id="ai-stop" type="button" hidden data-t="stop">إيقاف</button>
+        <p class="status" id="ai-status" aria-live="polite"></p>
+      </div>
+    </form>
+  </section>
+
+  <!-- HERO -->
+  <section id="view-hero" hidden>
+    <div class="builder">
+      <div class="preview"><svg id="hero-preview" viewBox="0 0 800 500" role="img" aria-label="Hero preview"></svg></div>
+      <div class="panel">
+        <div class="form-row">
+          <label class="f"><span data-t="name">اسم الطفل</span><input type="text" id="h-name" maxlength="24"></label>
+          <div class="f"><span data-t="gender">الطفل</span>
+            <div class="pills" id="h-gender"></div>
+          </div>
+        </div>
+
+        <div class="f"><span data-t="photo">صورة الطفل (اختيارية)</span>
+          <div class="photo-box">
+            <img id="h-photo-img" alt="" hidden>
+            <div style="display:flex;flex-direction:column;gap:8px;min-width:0;flex:1">
+              <div class="controls">
+                <span class="btn alt filelabel"><span data-t="upload">اختر صورة</span><input type="file" id="h-photo" accept="image/*"></span>
+                <button class="btn alt" type="button" id="h-photo-clear" hidden data-t="removePhoto">حذف الصورة</button>
+              </div>
+              <div id="h-adjust" hidden>
+                <label class="f small"><span data-t="zoom">تكبير الوجه</span><input type="range" id="h-zoom" min="1" max="3" step="0.05" value="1.4"></label>
+                <label class="f small"><span data-t="shiftY">تحريك للأعلى/الأسفل</span><input type="range" id="h-oy" min="-1" max="1" step="0.02" value="-0.2"></label>
+                <label class="f small"><span data-t="shiftX">تحريك يميناً/يساراً</span><input type="range" id="h-ox" min="-1" max="1" step="0.02" value="0"></label>
+              </div>
+            </div>
+          </div>
+          <div class="pills" id="h-mode"></div>
+          <p class="privacy" data-t="privacy">الصورة تتحول إلى رسم كرتوني داخل جهازك، والصورة الأصلية لا تُرسل ولا تُحفظ. زر «استخراج الملامح» وحده يرسلها إلى Claude بعد موافقتك.</p>
+          <div class="controls">
+            <button class="btn alt" type="button" id="h-analyze" hidden data-t="analyze">استخراج الملامح من الصورة</button>
+            <p class="status" id="h-status" aria-live="polite"></p>
+          </div>
+        </div>
+
+        <div class="f"><span data-t="skin">لون البشرة</span><div class="swatches" id="h-skin"></div></div>
+        <div class="f"><span data-t="hairColor">لون الشعر</span><div class="swatches" id="h-hair"></div></div>
+        <div class="f"><span data-t="hairStyle">تسريحة الشعر</span><div class="pills" id="h-style"></div></div>
+        <div class="f"><span data-t="shirt">لون الملابس</span><div class="swatches" id="h-shirt"></div></div>
+        <div class="f"><span data-t="extras">إضافات</span><div class="pills" id="h-extras"></div></div>
+        <div class="controls"><button class="btn sun" type="button" id="h-done" data-t="toLibrary">إلى المكتبة</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- READER -->
+  <section id="view-reader" hidden>
+    <div class="reader">
+      <div class="reader-title">
+        <h2 id="r-title"></h2>
+        <button class="btn alt" id="r-back" data-t="back">المكتبة</button>
+      </div>
+      <div class="pic" id="r-pic"></div>
+      <div class="page-text" id="r-text" aria-live="polite"></div>
+      <div class="controls">
+        <button class="btn alt" id="r-prev" data-t="prev">السابق</button>
+        <button class="btn sun" id="r-play" data-t="listen">استمع</button>
+        <div class="dots" id="r-dots"></div>
+        <button class="btn alt" id="r-next" data-t="next">التالي</button>
+      </div>
+      <div class="voicebar">
+        <label><span data-t="voice">الصوت</span> <select id="r-voice"></select></label>
+        <label><span data-t="speed">السرعة</span> <input type="range" id="r-rate" min="0.6" max="1.2" step="0.05" value="0.85"></label>
+        <label><input type="checkbox" id="r-auto" checked> <span data-t="auto">قراءة متواصلة</span></label>
+        <span class="muted small" id="r-voice-note"></span>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+"use strict";
+/* ---------- i18n ---------- */
+const T = {
+  ar: { brand:"حكايتي", tagline:"قصص يكون طفلك بطلها", tabLibrary:"المكتبة", tabHero:"البطل", tabReader:"القراءة", example:"مثال",
+    stripHint:"كل القصص تُكتب باسم البطل وتُرسم بشكله.", editHero:"تعديل البطل", newStoryTitle:"قصة جديدة بالذكاء الاصطناعي",
+    newStoryHint:"يكتبها Claude بلغة القصة المختارة، وتُرسم مشاهدها تلقائياً.", theme:"فكرة القصة", value:"القيمة التربوية", age:"عمر الطفل",
+    write:"اكتب القصة", stop:"إيقاف", name:"اسم الطفل", gender:"الطفل", photo:"صورة الطفل (اختيارية)", upload:"اختر صورة", removePhoto:"حذف الصورة",
+    zoom:"تكبير الوجه", shiftY:"تحريك للأعلى/الأسفل", shiftX:"تحريك يميناً/يساراً",
+    privacy:"الصورة تتحول إلى رسم كرتوني داخل جهازك، والصورة الأصلية لا تُرسل ولا تُحفظ. زر «استخراج الملامح» وحده يرسلها إلى Claude بعد موافقتك.",
+    analyze:"استخراج الملامح من الصورة", skin:"لون البشرة", hairColor:"لون الشعر", hairStyle:"تسريحة الشعر", shirt:"لون الملابس", extras:"إضافات",
+    toLibrary:"إلى المكتبة", back:"المكتبة", prev:"السابق", next:"التالي", listen:"استمع", stopListen:"أوقف الصوت", voice:"الصوت", speed:"السرعة", auto:"قراءة متواصلة",
+    boy:"ولد", girl:"بنت", modeDrawn:"شخصية مرسومة", modePhoto:"وجه من الصورة", glasses:"نظارة",
+    styles:{short:"قصير", spiky:"منكوش", curly:"مجعّد", long:"طويل", ponytail:"ذيل حصان", hijab:"حجاب"},
+    values:["الشجاعة","الصدق","التعاون","الرحمة بالحيوان","الصبر","حب التعلّم"], themePh:"مثلاً: رحلة إلى الصحراء مع جمل يتكلم",
+    pages:n=>`${n} صفحات`, aiStory:"قصة جديدة", builtIn:"من المكتبة", page:(i,n)=>`صفحة ${i} من ${n}`,
+    thinking:"Claude يكتب القصة… قد يستغرق ذلك دقيقة.", done:"أُضيفت القصة إلى المكتبة.", noAI:"توليد القصص غير متاح في هذا العرض.",
+    errGeneric:"تعذّر إنشاء القصة. جرّب مرة أخرى أو غيّر الفكرة.", errRate:"طلبات كثيرة، انتظر قليلاً ثم حاول.", errDenied:"لم يُسمح باستخدام Claude في هذه الصفحة.",
+    analyzing:"Claude ينظر إلى الصورة…", analyzed:"تم ضبط الملامح من الصورة. يمكنك تعديلها.", noVoice:"لا يوجد صوت لهذه اللغة في جهازك. يمكنك إضافته من إعدادات «تحويل النص إلى كلام».",
+    defaultVoice:"الصوت الافتراضي", photoErr:"تعذّرت قراءة الصورة، جرّب صورة أخرى.", delete:"حذف" },
+  fr: { brand:"Mon Histoire", tagline:"Des histoires dont votre enfant est le héros", tabLibrary:"Bibliothèque", tabHero:"Le héros", tabReader:"Lecture", example:"Exemple",
+    stripHint:"Chaque histoire est écrite avec le prénom du héros et dessinée à son image.", editHero:"Modifier le héros", newStoryTitle:"Nouvelle histoire avec l'IA",
+    newStoryHint:"Claude l'écrit dans la langue choisie et les scènes sont dessinées automatiquement.", theme:"Idée de l'histoire", value:"Valeur éducative", age:"Âge de l'enfant",
+    write:"Écrire l'histoire", stop:"Arrêter", name:"Prénom de l'enfant", gender:"L'enfant", photo:"Photo de l'enfant (facultative)", upload:"Choisir une photo", removePhoto:"Supprimer la photo",
+    zoom:"Zoom sur le visage", shiftY:"Déplacer haut/bas", shiftX:"Déplacer gauche/droite",
+    privacy:"La photo est transformée en dessin sur votre appareil ; l'original n'est ni envoyé ni enregistré. Seul le bouton « Extraire les traits » l'envoie à Claude, avec votre accord.",
+    analyze:"Extraire les traits de la photo", skin:"Couleur de peau", hairColor:"Couleur des cheveux", hairStyle:"Coiffure", shirt:"Couleur des vêtements", extras:"Accessoires",
+    toLibrary:"Vers la bibliothèque", back:"Bibliothèque", prev:"Précédent", next:"Suivant", listen:"Écouter", stopListen:"Arrêter le son", voice:"Voix", speed:"Vitesse", auto:"Lecture continue",
+    boy:"Garçon", girl:"Fille", modeDrawn:"Personnage dessiné", modePhoto:"Visage de la photo", glasses:"Lunettes",
+    styles:{short:"Courts", spiky:"En bataille", curly:"Bouclés", long:"Longs", ponytail:"Queue-de-cheval", hijab:"Hijab"},
+    values:["Le courage","L'honnêteté","L'entraide","La bonté envers les animaux","La patience","L'amour d'apprendre"], themePh:"Ex. : un voyage dans le désert avec un chameau qui parle",
+    pages:n=>`${n} pages`, aiStory:"Nouvelle histoire", builtIn:"Bibliothèque", page:(i,n)=>`Page ${i} sur ${n}`,
+    thinking:"Claude écrit l'histoire… cela peut prendre une minute.", done:"L'histoire a été ajoutée à la bibliothèque.", noAI:"La création d'histoires n'est pas disponible ici.",
+    errGeneric:"Impossible de créer l'histoire. Réessayez ou changez l'idée.", errRate:"Trop de demandes, patientez un peu.", errDenied:"Claude n'est pas autorisé sur cette page.",
+    analyzing:"Claude regarde la photo…", analyzed:"Les traits ont été réglés d'après la photo. Vous pouvez les modifier.", noVoice:"Aucune voix pour cette langue sur cet appareil. Ajoutez-en une dans les réglages de synthèse vocale.",
+    defaultVoice:"Voix par défaut", photoErr:"Impossible de lire cette photo, essayez-en une autre.", delete:"Supprimer" },
+  en: { brand:"My Story", tagline:"Stories where your child is the hero", tabLibrary:"Library", tabHero:"Hero", tabReader:"Read", example:"Example",
+    stripHint:"Every story is written with the hero's name and drawn in their likeness.", editHero:"Edit hero", newStoryTitle:"New story with AI",
+    newStoryHint:"Claude writes it in the chosen language and the scenes are drawn automatically.", theme:"Story idea", value:"Lesson", age:"Child's age",
+    write:"Write the story", stop:"Stop", name:"Child's name", gender:"Child", photo:"Child's photo (optional)", upload:"Choose a photo", removePhoto:"Remove photo",
+    zoom:"Zoom on face", shiftY:"Move up/down", shiftX:"Move left/right",
+    privacy:"The photo is turned into a cartoon on your device; the original is never uploaded or saved. Only the “Detect features” button sends it to Claude, after you agree.",
+    analyze:"Detect features from photo", skin:"Skin tone", hairColor:"Hair color", hairStyle:"Hairstyle", shirt:"Clothes color", extras:"Extras",
+    toLibrary:"Go to library", back:"Library", prev:"Previous", next:"Next", listen:"Listen", stopListen:"Stop audio", voice:"Voice", speed:"Speed", auto:"Keep reading",
+    boy:"Boy", girl:"Girl", modeDrawn:"Drawn character", modePhoto:"Face from photo", glasses:"Glasses",
+    styles:{short:"Short", spiky:"Spiky", curly:"Curly", long:"Long", ponytail:"Ponytail", hijab:"Hijab"},
+    values:["Courage","Honesty","Teamwork","Kindness to animals","Patience","Love of learning"], themePh:"e.g. a desert trip with a talking camel",
+    pages:n=>`${n} pages`, aiStory:"New story", builtIn:"Library", page:(i,n)=>`Page ${i} of ${n}`,
+    thinking:"Claude is writing the story… this can take a minute.", done:"The story was added to the library.", noAI:"Story writing isn't available in this view.",
+    errGeneric:"Couldn't create the story. Try again or change the idea.", errRate:"Too many requests, wait a little and try again.", errDenied:"Claude isn't allowed on this page.",
+    analyzing:"Claude is looking at the photo…", analyzed:"Features set from the photo. You can still adjust them.", noVoice:"No voice for this language on this device. Add one in your text-to-speech settings.",
+    defaultVoice:"Default voice", photoErr:"Couldn't read that photo, try another one.", delete:"Delete" }
+};
+const SPEECH_LANG = { ar: "ar-SA", fr: "fr-FR", en: "en-US" };
+const LANG_NAME = { ar: "Arabic (Modern Standard, simple, for children)", fr: "French", en: "English" };
+
+/* ---------- palettes ---------- */
+const SKINS = { light:"#F9DCC4", fair:"#EFC09C", tan:"#D59C72", brown:"#A86F48", dark:"#6B4430" };
+const HAIRS = { black:"#241915", brown:"#5A3923", chestnut:"#8C5530", blond:"#E2B95E", red:"#B8532C" };
+const SHIRTS = { saffron:"#F2A93B", teal:"#1F8A7E", rose:"#E0607A", sky:"#4A90D9", leaf:"#6BAF4A", plum:"#8E5BA8" };
+const STYLES = ["short","spiky","curly","long","ponytail","hijab"];
+const OUTLINE = "#2B2A33";
+
+/* ---------- state ---------- */
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("hikayati:" + k); return v ? JSON.parse(v) : d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem("hikayati:" + k, JSON.stringify(v)); } catch {} }
+};
+const DEFAULT_HERO = { name: "سلمى", gender: "f", skin: "fair", hair: "black", style: "ponytail", shirt: "rose", glasses: false, mode: "drawn", face: null, example: true };
+let hero = Object.assign({}, DEFAULT_HERO, store.get("hero", {}));
+let lang = store.get("lang", "ar");
+let aiStories = store.get("aiStories", []);
+let photoImg = null; // original photo kept in memory only
+let current = null, pageIdx = 0, speaking = false;
+
+/* ---------- built-in stories ---------- */
+const STORIES = [
+  { id: "star", title: { ar: "NAME ونجمة الليل", fr: "NAME et l'étoile de la nuit", en: "NAME and the Night Star" },
+    scenes: [
+      { bg: "bedroom", props: ["moon", "star"], heroX: .3,
+        ar: "في ليلةٍ هادئة، {جلس/جلست} NAME قرب النافذة {يتأمّل/تتأمّل} السماء. فجأةً {رأى/رأت} نجمةً صغيرة تلمع وتغمز {له/لها}.",
+        fr: "Par une nuit tranquille, NAME était {assis/assise} près de la fenêtre et regardait le ciel. Soudain, une petite étoile se mit à briller et lui fit un clin d'œil.",
+        en: "On a quiet night, NAME sat by the window, looking at the sky. Suddenly, a little star twinkled and winked at {him/her}." },
+      { bg: "night", props: ["rocket", "star", "moon"], heroX: .62,
+        ar: "همست النجمة: «يا NAME، أنا تائهة ولا أعرف طريق العودة إلى أخواتي». {فصنع/فصنعت} NAME صاروخاً من الكرتون، {وركب/وركبت} فيه بشجاعة.",
+        fr: "L'étoile murmura : « NAME, je suis perdue, je ne trouve plus le chemin vers mes sœurs. » Alors NAME fabriqua une fusée en carton et monta dedans, très {courageux/courageuse}.",
+        en: "The star whispered: “NAME, I'm lost and I can't find my way back to my sisters.” So NAME built a cardboard rocket and bravely climbed inside." },
+      { bg: "space", props: ["moon", "planet", "rocket"], heroX: .55,
+        ar: "طار الصاروخ عالياً فوق الغيوم، ومرّ بالقمر الفضّي الذي ابتسم وقال: «{اتبعْ/اتبعي} الضوءَ الأزرق!»",
+        fr: "La fusée s'envola au-dessus des nuages et passa près de la lune argentée, qui sourit et dit : « Suis la lumière bleue ! »",
+        en: "The rocket flew high above the clouds and passed the silver moon, who smiled and said: “Follow the blue light!”" },
+      { bg: "space", props: ["stars", "star", "planet"], heroX: .45,
+        ar: "وهناك، بين آلاف النجوم، وجدت النجمة الصغيرة أخواتها. أضاءت السماء فرحاً وقالت النجوم: «شكراً يا NAME، {أنتَ صديقُ/أنتِ صديقةُ} النجوم!»",
+        fr: "Là-bas, parmi des milliers d'étoiles, la petite étoile retrouva ses sœurs. Le ciel s'illumina de joie : « Merci NAME, tu es {l'ami/l'amie} des étoiles ! »",
+        en: "There, among thousands of stars, the little star found her sisters. The sky lit up with joy: “Thank you, NAME, you are a friend of the stars!”" },
+      { bg: "bedroom", props: ["moon", "star"], heroX: .3,
+        ar: "{عاد/عادت} NAME إلى {سريره/سريرها}. وكلّما {نظر/نظرت} إلى السماء، غمزت {له/لها} نجمةٌ صغيرة. {تصبح/تصبحين} على خير يا NAME.",
+        fr: "NAME retourna au lit. Et chaque fois que NAME regarde le ciel, une petite étoile lui fait un clin d'œil. Bonne nuit, NAME.",
+        en: "NAME went back to bed. And whenever NAME looks at the sky, a little star winks at {him/her}. Good night, NAME." }
+    ] },
+  { id: "forest", title: { ar: "NAME في غابة الأصدقاء", fr: "NAME dans la forêt des amis", en: "NAME in the Forest of Friends" },
+    scenes: [
+      { bg: "forest", props: ["sun", "apples"], heroX: .4,
+        ar: "في صباحٍ مشمس، {ذهب/ذهبت} NAME إلى الغابة الخضراء {ومعه/ومعها} سلّةٌ صغيرة مليئة بالتفاح.",
+        fr: "Un matin ensoleillé, NAME partit dans la forêt verte avec un petit panier plein de pommes.",
+        en: "One sunny morning, NAME went into the green forest with a little basket full of apples." },
+      { bg: "forest", props: ["bird", "cloud"], heroX: .45,
+        ar: "{سمع/سمعت} NAME صوتاً حزيناً: عصفورٌ صغير سقط من عشّه. {فحمله/فحملته} NAME بلطف بين {يديه/يديها}.",
+        fr: "NAME entendit un petit cri triste : un oisillon était tombé de son nid. NAME le prit doucement dans ses mains.",
+        en: "NAME heard a sad little chirp: a baby bird had fallen from its nest. NAME gently held it in {his/her} hands." },
+      { bg: "forest", props: ["owl", "bird"], heroX: .3,
+        ar: "{سأل/سألت} NAME البومةَ الحكيمة: «أين عشّ هذا العصفور؟» فقالت: «فوق أعلى شجرة، عند النهر».",
+        fr: "NAME demanda à la sage chouette : « Où est le nid de cet oisillon ? » Elle répondit : « Tout en haut du grand arbre, près de la rivière. »",
+        en: "NAME asked the wise owl: “Where is this little bird's nest?” She answered: “At the top of the tallest tree, by the river.”" },
+      { bg: "river", props: ["tree", "bird"], heroX: .42,
+        ar: "{عبر/عبرت} NAME النهر على الحجارة خطوةً خطوة، {وصعد/وصعدت} بحذر حتى {أعاد/أعادت} العصفور إلى أمّه.",
+        fr: "NAME traversa la rivière pierre après pierre, grimpa prudemment et ramena l'oisillon auprès de sa maman.",
+        en: "NAME crossed the river stone by stone, climbed carefully, and brought the baby bird back to its mother." },
+      { bg: "garden", props: ["bird", "flower", "apples", "butterfly"], heroX: .4,
+        ar: "غرّدت العصافير أجمل أغنية، {وتقاسم/وتقاسمت} NAME التفاح مع {أصدقائه/أصدقائها} الجدد. {تعلّم/تعلّمت} NAME أنّ الرحمة تجعل القلب سعيداً.",
+        fr: "Les oiseaux chantèrent leur plus belle chanson, et NAME partagea ses pommes avec ses nouveaux amis. NAME avait appris que la gentillesse rend le cœur heureux.",
+        en: "The birds sang their most beautiful song, and NAME shared the apples with {his/her} new friends. NAME learned that kindness makes the heart happy." }
+    ] },
+  { id: "sea", title: { ar: "NAME والقارب الأزرق", fr: "NAME et le bateau bleu", en: "NAME and the Blue Boat" },
+    scenes: [
+      { bg: "sea", props: ["boat", "sun", "cloud"], heroX: .5,
+        ar: "{كان/كانت} لدى NAME قاربٌ أزرق صغير، {يحلم/تحلم} أن {يبحر/تبحر} به إلى جزيرة بعيدة.",
+        fr: "NAME avait un petit bateau bleu et rêvait de naviguer jusqu'à une île lointaine.",
+        en: "NAME had a little blue boat and dreamed of sailing to a faraway island." },
+      { bg: "sea", props: ["boat", "fish", "cloud"], heroX: .5,
+        ar: "في البحر، {قابل/قابلت} NAME سمكةً ملوّنة قالت: «سأدلّك على الطريق، لكن {كن صبوراً/كوني صبورة}».",
+        fr: "En mer, NAME rencontra un poisson multicolore : « Je vais te montrer le chemin, mais tu dois être {patient/patiente}. »",
+        en: "At sea, NAME met a colorful fish: “I'll show you the way, but you must be patient.”" },
+      { bg: "storm", props: ["boat", "cloud"], heroX: .5,
+        ar: "هبّت ريحٌ قوية واهتزّ القارب، لكنّ NAME {تمسّك/تمسّكت} بالمجداف {وقال/وقالت}: «لن أخاف!»",
+        fr: "Un vent fort se leva et le bateau tangua, mais NAME tint bon la rame et cria : « Je n'ai pas peur ! »",
+        en: "A strong wind blew and the boat rocked, but NAME held the oar tight and shouted: “I'm not afraid!”" },
+      { bg: "island", props: ["palm", "chest", "sun"], heroX: .45,
+        ar: "{وصل/وصلت} NAME إلى الجزيرة {فوجد/فوجدت} صندوقاً قديماً. وفي داخله… كتابٌ مليء بالحكايات!",
+        fr: "NAME arriva sur l'île et trouva un vieux coffre. Et dedans… un livre plein d'histoires !",
+        en: "NAME reached the island and found an old chest. And inside… a book full of stories!" },
+      { bg: "sunset", props: ["boat"], heroX: .5,
+        ar: "{عاد/عادت} NAME مع غروب الشمس، {وقرأ/وقرأت} الحكايات {لعائلته/لعائلتها} حتى نام الجميع مبتسمين.",
+        fr: "NAME rentra au coucher du soleil et lut les histoires à toute la famille, jusqu'à ce que tout le monde s'endorme en souriant.",
+        en: "NAME sailed home at sunset and read the stories to the whole family, until everyone fell asleep smiling." }
+    ] }
+];
+
+function personalize(t) {
+  const nm = (hero.name || "").trim() || (lang === "ar" ? "البطل" : lang === "fr" ? "le héros" : "the hero");
+  return String(t || "").replace(/\{([^{}\/]*)\/([^{}]*)\}/g, (m, a, b) => hero.gender === "f" ? b : a).replace(/NAME/g, nm);
+}
+function storyList() {
+  const ai = aiStories.filter(s => s.lang === lang).map(s => ({ ...s, ai: true }));
+  return [...ai, ...STORIES];
+}
+function sceneText(story, sc) { return personalize(story.ai ? sc.text : sc[lang]); }
+function storyTitle(story) { return personalize(story.ai ? story.title : story.title[lang]); }
+
+/* ---------- SVG drawing ---------- */
+let uidN = 0;
+const uid = () => "u" + (++uidN);
+function star5(cx, cy, R, r, fill, extra = "") {
+  let p = [];
+  for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r : R; p.push((cx + rr * Math.cos(a)).toFixed(1) + "," + (cy + rr * Math.sin(a)).toFixed(1)); }
+  return `<polygon points="${p.join(" ")}" fill="${fill}" ${extra}/>`;
+}
+function rng(seed) { let s = seed; return () => (s = (s * 9301 + 49297) % 233280) / 233280; }
+function skyStars(n, seed, ymax, color = "#FFF6D0") {
+  const r = rng(seed); let s = "";
+  for (let i = 0; i < n; i++) { const x = r() * 800, y = r() * ymax, k = .6 + r() * 1.8; s += `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${k.toFixed(1)}" fill="${color}" opacity="${(.5 + r() * .5).toFixed(2)}"/>`; }
+  return s;
+}
+function grad(id, stops, vertical = true) {
+  return `<linearGradient id="${id}" x1="0" y1="0" x2="${vertical ? 0 : 1}" y2="${vertical ? 1 : 0}">${stops.map(([o, c]) => `<stop offset="${o}" stop-color="${c}"/>`).join("")}</linearGradient>`;
+}
+function treeShape(x, y, s, c1, c2) {
+  return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-9" y="-70" width="18" height="70" rx="6" fill="#7A4E2D"/><circle cx="0" cy="-95" r="48" fill="${c1}"/><circle cx="-30" cy="-75" r="30" fill="${c2}"/><circle cx="30" cy="-78" r="32" fill="${c2}"/></g>`;
+}
+
+const BG = {
+  garden: { ground: 440, draw: id => `<defs>${grad(id + "s", [[0, "#8FD3F2"], [1, "#DDF3FA"]])}</defs><rect width="800" height="500" fill="url(#${id}s)"/>
+    <path d="M0 330 Q200 260 420 320 T800 300 V500 H0z" fill="#9ED37A"/><path d="M0 400 Q260 350 520 400 T800 390 V500 H0z" fill="#7CC160"/>
+    ${treeShape(90, 360, .9, "#5DA84A", "#4C9440")}${treeShape(720, 350, .8, "#5DA84A", "#4C9440")}` },
+  forest: { ground: 445, draw: id => `<defs>${grad(id + "s", [[0, "#A6DDEB"], [1, "#E6F5E1"]])}</defs><rect width="800" height="500" fill="url(#${id}s)"/>
+    ${[40, 150, 260, 560, 670, 780].map((x, i) => treeShape(x, 340 + (i % 2) * 10, .9 + (i % 3) * .1, "#3F8A4A", "#357A40")).join("")}
+    <path d="M0 380 Q400 350 800 380 V500 H0z" fill="#6DB356"/>
+    ${treeShape(700, 450, 1.25, "#4E9F48", "#3F8E3F")}${treeShape(80, 455, 1.15, "#4E9F48", "#3F8E3F")}
+    <g fill="#F6D24A">${[[230, 470], [520, 480], [600, 462]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="5"/>`).join("")}</g>` },
+  river: { ground: 440, draw: id => `<defs>${grad(id + "s", [[0, "#9ED8EE"], [1, "#E4F6EE"]])}</defs><rect width="800" height="500" fill="url(#${id}s)"/>
+    <path d="M0 330 Q300 300 800 330 V500 H0z" fill="#79BC5C"/>
+    <path d="M0 400 Q200 370 400 410 T800 395 V470 Q600 450 400 480 T0 470z" fill="#5BB4E0"/>
+    <path d="M60 425 q30 -8 60 0 M300 440 q30 -8 60 0 M560 420 q30 -8 60 0" stroke="#D6F0FB" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <g fill="#A9A49B" stroke="${OUTLINE}" stroke-width="2">${[[180, 440], [260, 448], [340, 442], [420, 448], [500, 440]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="26" ry="10"/>`).join("")}</g>
+    ${treeShape(120, 340, .8, "#4E9F48", "#3F8E3F")}` },
+  sea: { ground: 470, draw: id => `<defs>${grad(id + "s", [[0, "#7FCBF0"], [1, "#DDF2FB"]])}${grad(id + "w", [[0, "#3C9BD6"], [1, "#1F6FA8"]])}</defs><rect width="800" height="500" fill="url(#${id}s)"/>
+    <rect y="300" width="800" height="200" fill="url(#${id}w)"/>
+    <path d="M0 330 q25 -10 50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0" stroke="#BFE6F8" stroke-width="4" fill="none"/>
+    <path d="M0 470 q25 -10 50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0" stroke="#BFE6F8" stroke-width="4" fill="none" opacity=".7"/>` },
+  storm: { ground: 470, draw: id => `<defs>${grad(id + "s", [[0, "#5D6C86"], [1, "#9AA9BE"]])}${grad(id + "w", [[0, "#2F6E9A"], [1, "#18486E"]])}</defs><rect width="800" height="500" fill="url(#${id}s)"/>
+    <path d="M0 310 Q100 280 200 310 T400 310 T600 310 T800 310 V500 H0z" fill="url(#${id}w)"/>
+    <path d="M30 360 q40 -30 80 0 M260 390 q40 -30 80 0 M520 350 q40 -30 80 0 M660 420 q40 -30 80 0" stroke="#D9EEF8" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M640 60 l-30 70 h25 l-20 60 l55 -85 h-27 l22 -45z" fill="#FFE27A" stroke="${OUTLINE}" stroke-width="2"/>
+    <g stroke="#CFDBE8" stroke-width="3" stroke-linecap="round" opacity=".7">${[80, 180, 300, 420, 540, 720].map(x => `<line x1="${x}" y1="120" x2="${x - 14}" y2="160"/>`).join("")}</g>` },
+  island: { ground: 410, draw: id => `<defs>${grad(id + "s", [[0, "#7FCBF0"], [1, "#E5F6FC"]])}</defs><rect width="800" height="500" fill="url(#${id}s)"/>
+    <rect y="320" width="800" height="180" fill="#3C9BD6"/>
+    <path d="M90 440 Q400 330 720 440 Q400 470 90 440z" fill="#F2D59A" stroke="${OUTLINE}" stroke-width="3"/>
+    <path d="M0 470 q25 -10 50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0" stroke="#BFE6F8" stroke-width="4" fill="none"/>`, },
+  sunset: { ground: 470, draw: id => `<defs>${grad(id + "s", [[0, "#F7A26B"], [.55, "#F9D38A"], [1, "#FBE6B5"]])}${grad(id + "w", [[0, "#E8866A"], [1, "#6A4D8C"]])}</defs><rect width="800" height="500" fill="url(#${id}s)"/>
+    <circle cx="560" cy="300" r="70" fill="#FFE9A8"/><rect y="300" width="800" height="200" fill="url(#${id}w)"/>
+    <g stroke="#FFE1A1" stroke-width="4" stroke-linecap="round" opacity=".8"><line x1="510" y1="330" x2="610" y2="330"/><line x1="525" y1="355" x2="595" y2="355"/><line x1="540" y1="380" x2="580" y2="380"/></g>
+    <path d="M60 120 q20 -10 40 0 M130 90 q20 -10 40 0" stroke="#7A4E5E" stroke-width="3" fill="none" stroke-linecap="round"/>` },
+  night: { ground: 440, draw: id => `<defs>${grad(id + "s", [[0, "#15214A"], [1, "#3B4C88"]])}</defs><rect width="800" height="500" fill="url(#${id}s)"/>${skyStars(60, 7, 300)}
+    <path d="M0 360 Q200 310 420 350 T800 330 V500 H0z" fill="#2B3D5E"/><path d="M0 420 Q300 390 560 420 T800 410 V500 H0z" fill="#33507A"/>
+    <rect x="80" y="300" width="90" height="70" fill="#5A6F99" stroke="${OUTLINE}" stroke-width="3"/><path d="M70 305 L125 260 L180 305z" fill="#C25B5B" stroke="${OUTLINE}" stroke-width="3"/><rect x="112" y="320" width="26" height="24" fill="#FFD976"/>` },
+  space: { ground: 450, draw: id => `<defs>${grad(id + "s", [[0, "#0D1230"], [1, "#2C2466"]])}</defs><rect width="800" height="500" fill="url(#${id}s)"/>${skyStars(140, 3, 500)}
+    <ellipse cx="400" cy="560" rx="560" ry="140" fill="#8C8FB8" stroke="${OUTLINE}" stroke-width="3"/>
+    <g fill="#74779F">${[[150, 470, 30], [380, 455, 18], [620, 475, 26]].map(([x, y, r]) => `<ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r / 3}"/>`).join("")}</g>` },
+  bedroom: { ground: 455, draw: id => `<defs>${grad(id + "n", [[0, "#15214A"], [1, "#344A86"]])}</defs><rect width="800" height="500" fill="#F3DDBA"/>
+    <rect y="0" width="800" height="18" fill="#E2C597"/><rect y="420" width="800" height="80" fill="#C79566"/>
+    <g stroke="#B5845A" stroke-width="2">${[0, 100, 200, 300, 400, 500, 600, 700].map(x => `<line x1="${x}" y1="420" x2="${x + 40}" y2="500"/>`).join("")}</g>
+    <rect x="500" y="70" width="230" height="200" rx="10" fill="url(#${id}n)" stroke="${OUTLINE}" stroke-width="5"/>
+    <line x1="615" y1="70" x2="615" y2="270" stroke="${OUTLINE}" stroke-width="4"/><line x1="500" y1="170" x2="730" y2="170" stroke="${OUTLINE}" stroke-width="4"/>
+    <path d="M490 62 q40 120 0 220 h-20 v-220z M740 62 q-40 120 0 220 h20 v-220z" fill="#4AA597" stroke="${OUTLINE}" stroke-width="3"/>
+    <g fill="#FFF6D0">${[[530, 100], [580, 130], [700, 220], [650, 245], [545, 235]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="2"/>`).join("")}</g>
+    <rect x="520" y="340" width="260" height="90" rx="12" fill="#6D8FD0" stroke="${OUTLINE}" stroke-width="3"/><rect x="520" y="310" width="60" height="120" rx="10" fill="#A5774D" stroke="${OUTLINE}" stroke-width="3"/><ellipse cx="620" cy="340" rx="40" ry="16" fill="#FFFFFF" stroke="${OUTLINE}" stroke-width="3"/>
+    <rect x="40" y="250" width="130" height="14" fill="#A5774D"/><rect x="55" y="214" width="16" height="36" fill="#E0607A"/><rect x="74" y="220" width="14" height="30" fill="#4A90D9"/><rect x="91" y="210" width="18" height="40" fill="#F2A93B"/>`,
+    anchors: { moon: [670, 115, .55], star: [560, 210, .8] } },
+  desert: { ground: 445, draw: id => `<defs>${grad(id + "s", [[0, "#F6C77B"], [1, "#FCEBC7"]])}</defs><rect width="800" height="500" fill="url(#${id}s)"/>
+    <path d="M0 340 Q220 280 430 340 T800 320 V500 H0z" fill="#E7B566"/><path d="M0 410 Q300 360 560 410 T800 400 V500 H0z" fill="#D9A04E"/>` },
+  city: { ground: 450, draw: id => `<defs>${grad(id + "s", [[0, "#9AD2F0"], [1, "#E8F5FB"]])}</defs><rect width="800" height="500" fill="url(#${id}s)"/>
+    ${[[20, 200, 90, "#F2A93B"], [120, 240, 80, "#4A90D9"], [210, 170, 100, "#E0607A"], [330, 230, 70, "#6BAF4A"], [520, 190, 90, "#8E5BA8"], [620, 250, 80, "#F2A93B"], [710, 210, 90, "#1F8A7E"]].map(([x, y, w, c]) =>
+      `<rect x="${x}" y="${y}" width="${w}" height="${440 - y}" fill="${c}" stroke="${OUTLINE}" stroke-width="3"/>` + [0, 1, 2, 3].map(r => `<rect x="${x + 14}" y="${y + 20 + r * 50}" width="18" height="22" fill="#FFF3C4"/><rect x="${x + w - 32}" y="${y + 20 + r * 50}" width="18" height="22" fill="#FFF3C4"/>`).join("")).join("")}
+    <rect y="430" width="800" height="70" fill="#8E97A6"/><g stroke="#F4F4F4" stroke-width="5">${[40, 200, 360, 520, 680].map(x => `<line x1="${x}" y1="470" x2="${x + 70}" y2="470"/>`).join("")}</g>` }
+};
+const BG_KEYS = Object.keys(BG);
+
+const PROPS = {
+  moon: (x = 680, y = 90, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})"><circle r="44" fill="#FFF1B8" stroke="${OUTLINE}" stroke-width="3"/><circle cx="-14" cy="-8" r="7" fill="#F2DE8E"/><circle cx="14" cy="12" r="5" fill="#F2DE8E"/><circle cx="-10" cy="4" r="3" fill="${OUTLINE}"/><circle cx="8" cy="-4" r="3" fill="${OUTLINE}"/><path d="M-10 16 q10 8 20 0" stroke="${OUTLINE}" stroke-width="3" fill="none" stroke-linecap="round"/></g>`,
+  star: (x = 560, y = 120, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})">${star5(0, 0, 38, 17, "#FFD54A", `stroke="${OUTLINE}" stroke-width="3" stroke-linejoin="round"`)}<circle cx="-7" cy="-2" r="3" fill="${OUTLINE}"/><circle cx="7" cy="-2" r="3" fill="${OUTLINE}"/><path d="M-6 7 q6 5 12 0" stroke="${OUTLINE}" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="-12" cy="5" r="3" fill="#F59A7A" opacity=".7"/><circle cx="12" cy="5" r="3" fill="#F59A7A" opacity=".7"/></g>`,
+  stars: () => { const r = rng(11); let s = ""; for (let i = 0; i < 12; i++) s += star5(60 + r() * 680, 40 + r() * 220, 12 + r() * 8, 5 + r() * 3, "#FFE27A", `stroke="${OUTLINE}" stroke-width="2"`); return s; },
+  sun: (x = 690, y = 90) => `<g transform="translate(${x} ${y})"><g stroke="#FFB627" stroke-width="6" stroke-linecap="round">${[0, 45, 90, 135, 180, 225, 270, 315].map(a => `<line x1="0" y1="-58" x2="0" y2="-74" transform="rotate(${a})"/>`).join("")}</g><circle r="46" fill="#FFD24A" stroke="${OUTLINE}" stroke-width="3"/></g>`,
+  cloud: (x = 220, y = 90) => `<g transform="translate(${x} ${y})" fill="#FFFFFF" stroke="${OUTLINE}" stroke-width="3"><path d="M-60 20 q-30 0 -30 -22 q0 -24 30 -22 q8 -30 42 -24 q16 -22 44 -8 q30 -6 36 24 q28 2 26 26 q-2 26 -30 26z"/></g>`,
+  rocket: (x = 300, y = 300) => `<g transform="translate(${x} ${y})"><path d="M-14 70 q14 50 28 0z" fill="#FF8A3D"/><path d="M-8 70 q8 30 16 0z" fill="#FFE27A"/><path d="M-40 70 l20 -50 v50z M40 70 l-20 -50 v50z" fill="#E0607A" stroke="${OUTLINE}" stroke-width="3" stroke-linejoin="round"/><path d="M0 -110 C40 -70 34 20 24 70 H-24 C-34 20 -40 -70 0 -110z" fill="#F4F4F8" stroke="${OUTLINE}" stroke-width="3"/><circle cy="-30" r="16" fill="#7FCBF0" stroke="${OUTLINE}" stroke-width="3"/><path d="M-18 -78 Q0 -96 18 -78" fill="#E0607A" stroke="${OUTLINE}" stroke-width="3"/></g>`,
+  planet: (x = 140, y = 130) => `<g transform="translate(${x} ${y})"><circle r="44" fill="#F2A93B" stroke="${OUTLINE}" stroke-width="3"/><path d="M-30 -10 q30 10 60 0" stroke="#D98A2B" stroke-width="6" fill="none"/><ellipse rx="78" ry="18" fill="none" stroke="#7FCBF0" stroke-width="7" transform="rotate(-15)"/></g>`,
+  bird: (x = 600, y = 200) => `<g transform="translate(${x} ${y})"><ellipse rx="22" ry="18" fill="#4A90D9" stroke="${OUTLINE}" stroke-width="3"/><path d="M-4 -2 q-14 -4 -16 12 q14 0 16 -12z" fill="#3570B0" stroke="${OUTLINE}" stroke-width="2"/><path d="M20 -2 l12 4 l-12 4z" fill="#F2A93B" stroke="${OUTLINE}" stroke-width="2"/><circle cx="10" cy="-6" r="3" fill="${OUTLINE}"/></g>`,
+  owl: (x = 620, y = 210) => `<g transform="translate(${x} ${y})"><rect x="-80" y="38" width="160" height="12" rx="6" fill="#7A4E2D"/><ellipse rx="34" ry="42" fill="#A0724E" stroke="${OUTLINE}" stroke-width="3"/><ellipse cy="12" rx="20" ry="24" fill="#E7C9A0"/><circle cx="-13" cy="-12" r="12" fill="#FFF" stroke="${OUTLINE}" stroke-width="2"/><circle cx="13" cy="-12" r="12" fill="#FFF" stroke="${OUTLINE}" stroke-width="2"/><circle cx="-13" cy="-12" r="5" fill="${OUTLINE}"/><circle cx="13" cy="-12" r="5" fill="${OUTLINE}"/><path d="M-5 0 l5 8 l5 -8z" fill="#F2A93B"/><path d="M-26 -36 l8 14 l-16 0z M26 -36 l-8 14 l16 0z" fill="#A0724E" stroke="${OUTLINE}" stroke-width="2"/></g>`,
+  tree: (x = 640, y = 430) => treeShape(x, y, 1.4, "#4E9F48", "#3F8E3F"),
+  apples: (x, y) => `<g transform="translate(${x} ${y})"><path d="M-30 -30 h60 l-8 30 h-44z" fill="#C98A4B" stroke="${OUTLINE}" stroke-width="3"/><path d="M-26 -30 q26 -40 52 0" fill="none" stroke="${OUTLINE}" stroke-width="3"/><g fill="#E0463F" stroke="${OUTLINE}" stroke-width="2"><circle cx="-14" cy="-34" r="10"/><circle cx="4" cy="-38" r="10"/><circle cx="18" cy="-32" r="9"/></g></g>`,
+  flower: (x = 640, y = 450) => [0, 50, 100].map((d, i) => `<g transform="translate(${x + d} ${y - (i % 2) * 6})"><line y1="0" y2="-40" stroke="#3F8E3F" stroke-width="4"/>${[0, 72, 144, 216, 288].map(a => `<ellipse cy="-52" rx="7" ry="12" fill="${["#E0607A", "#F2A93B", "#8E5BA8"][i]}" transform="rotate(${a} 0 -40)"/>`).join("")}<circle cy="-40" r="6" fill="#FFE27A"/></g>`).join(""),
+  butterfly: (x = 560, y = 200) => `<g transform="translate(${x} ${y}) rotate(-15)"><ellipse cx="-14" cy="-8" rx="16" ry="12" fill="#F2A93B" stroke="${OUTLINE}" stroke-width="2"/><ellipse cx="14" cy="-8" rx="16" ry="12" fill="#F2A93B" stroke="${OUTLINE}" stroke-width="2"/><ellipse cx="-10" cy="10" rx="10" ry="8" fill="#E0607A" stroke="${OUTLINE}" stroke-width="2"/><ellipse cx="10" cy="10" rx="10" ry="8" fill="#E0607A" stroke="${OUTLINE}" stroke-width="2"/><rect x="-3" y="-16" width="6" height="32" rx="3" fill="${OUTLINE}"/></g>`,
+  boatBack: (x = 400, y = 400) => `<g transform="translate(${x} ${y})"><line x1="0" y1="-10" x2="0" y2="-210" stroke="#7A4E2D" stroke-width="7"/><path d="M6 -200 Q90 -120 6 -40z" fill="#FFFFFF" stroke="${OUTLINE}" stroke-width="3"/><path d="M0 -210 l30 10 l-30 10z" fill="#E0607A"/></g>`,
+  boatFront: (x = 400, y = 400) => `<g transform="translate(${x} ${y})"><path d="M-130 -30 H130 L100 30 H-100z" fill="#2F78C4" stroke="${OUTLINE}" stroke-width="3" stroke-linejoin="round"/><rect x="-130" y="-34" width="260" height="10" rx="4" fill="#F2A93B" stroke="${OUTLINE}" stroke-width="2"/><g fill="#FFFFFF" stroke="${OUTLINE}" stroke-width="2"><circle cx="-60" r="9"/><circle cx="0" r="9"/><circle cx="60" r="9"/></g></g>`,
+  fish: (x = 640, y = 430) => `<g transform="translate(${x} ${y})"><path d="M34 0 l26 -18 v36z" fill="#E0607A" stroke="${OUTLINE}" stroke-width="3" stroke-linejoin="round"/><ellipse rx="40" ry="24" fill="#F2A93B" stroke="${OUTLINE}" stroke-width="3"/><path d="M-6 -22 q8 22 0 44 M10 -20 q8 20 0 40" stroke="#E0607A" stroke-width="5" fill="none"/><circle cx="-22" cy="-6" r="5" fill="#FFF" stroke="${OUTLINE}" stroke-width="2"/><circle cx="-23" cy="-6" r="2" fill="${OUTLINE}"/><path d="M-36 6 q4 4 8 0" stroke="${OUTLINE}" stroke-width="2" fill="none"/></g>`,
+  chest: (x = 560, y = 420) => `<g transform="translate(${x} ${y})"><rect x="-50" y="-50" width="100" height="50" rx="6" fill="#A5672F" stroke="${OUTLINE}" stroke-width="3"/><path d="M-50 -50 L-40 -95 H40 L50 -50z" fill="#C07D3C" stroke="${OUTLINE}" stroke-width="3"/><rect x="-26" y="-74" width="52" height="34" fill="#4A90D9" stroke="${OUTLINE}" stroke-width="2" transform="rotate(-8)"/><line x1="0" y1="-76" x2="-4" y2="-42" stroke="#FFF" stroke-width="3"/><g stroke="#FFE27A" stroke-width="3" stroke-linecap="round"><line x1="-30" y1="-110" x2="-38" y2="-128"/><line x1="0" y1="-114" x2="0" y2="-134"/><line x1="30" y1="-110" x2="38" y2="-128"/></g><rect x="-8" y="-30" width="16" height="14" fill="#FFD24A" stroke="${OUTLINE}" stroke-width="2"/></g>`,
+  palm: (x = 250, y = 420) => `<g transform="translate(${x} ${y})"><path d="M-8 0 Q-20 -100 10 -200 L22 -196 Q-4 -100 8 0z" fill="#A0724E" stroke="${OUTLINE}" stroke-width="3"/>${[-150, -110, -60, -20, 20].map(a => `<path d="M16 -200 q50 -30 100 10 q-50 -10 -100 -10z" fill="#4E9F48" stroke="${OUTLINE}" stroke-width="2" transform="rotate(${a + 60} 16 -200)"/>`).join("")}<circle cx="10" cy="-190" r="8" fill="#7A4E2D"/><circle cx="24" cy="-186" r="8" fill="#7A4E2D"/></g>`,
+  camel: (x = 600, y = 440) => `<g transform="translate(${x} ${y})" stroke="${OUTLINE}" stroke-width="3" stroke-linejoin="round"><g fill="#C9934F"><rect x="-50" y="-60" width="10" height="60"/><rect x="30" y="-60" width="10" height="60"/><path d="M-60 -60 Q-50 -130 -10 -100 Q20 -140 50 -60z"/><path d="M40 -80 Q70 -90 66 -140 h20 q4 50 -30 70z"/><ellipse cx="80" cy="-144" rx="20" ry="12"/></g><circle cx="84" cy="-148" r="3" fill="${OUTLINE}"/></g>`,
+  cat: (x, y) => `<g transform="translate(${x} ${y})" stroke="${OUTLINE}" stroke-width="3"><path d="M30 -10 q30 -10 20 -40" fill="none" stroke="#F2A93B" stroke-width="7" stroke-linecap="round"/><ellipse cy="-22" rx="30" ry="22" fill="#F2A93B"/><circle cx="-26" cy="-46" r="18" fill="#F2A93B"/><path d="M-40 -58 l4 -18 l10 12z M-14 -58 l-2 -18 l-10 12z" fill="#F2A93B"/><circle cx="-32" cy="-48" r="2.5" fill="${OUTLINE}" stroke="none"/><circle cx="-20" cy="-48" r="2.5" fill="${OUTLINE}" stroke="none"/></g>`,
+  house: (x = 650, y = 440) => `<g transform="translate(${x} ${y})" stroke="${OUTLINE}" stroke-width="3"><rect x="-70" y="-110" width="140" height="110" fill="#F4E3C3"/><path d="M-85 -105 L0 -175 L85 -105z" fill="#D9536A"/><rect x="-18" y="-60" width="36" height="60" fill="#7A4E2D"/><rect x="-55" y="-90" width="28" height="26" fill="#7FCBF0"/><rect x="27" y="-90" width="28" height="26" fill="#7FCBF0"/></g>`,
+  castle: (x = 640, y = 440) => `<g transform="translate(${x} ${y})" stroke="${OUTLINE}" stroke-width="3" fill="#D8CFE8"><rect x="-90" y="-150" width="40" height="150"/><rect x="50" y="-150" width="40" height="150"/><rect x="-50" y="-110" width="100" height="110"/><path d="M-96 -150 L-70 -195 L-44 -150z M44 -150 L70 -195 L96 -150z" fill="#8E5BA8"/><path d="M-20 0 v-40 a20 20 0 0 1 40 0 v40z" fill="#7A4E2D"/></g>`,
+  balloon: (x = 600, y = 150) => `<g transform="translate(${x} ${y})" stroke="${OUTLINE}" stroke-width="3"><path d="M0 -70 C60 -70 60 10 10 40 H-10 C-60 10 -60 -70 0 -70z" fill="#E0607A"/><path d="M0 -70 C20 -50 20 20 4 40 M0 -70 C-20 -50 -20 20 -4 40" fill="none" stroke="#F2A93B" stroke-width="6"/><line x1="-10" y1="40" x2="-12" y2="62"/><line x1="10" y1="40" x2="12" y2="62"/><rect x="-16" y="60" width="32" height="22" fill="#C98A4B"/></g>`,
+  book: (x, y) => `<g transform="translate(${x} ${y})" stroke="${OUTLINE}" stroke-width="3"><path d="M-40 -40 q20 -10 40 0 q20 -10 40 0 v40 q-20 -10 -40 0 q-20 -10 -40 0z" fill="#FFFFFF"/><line x1="0" y1="-40" x2="0" y2="0"/></g>`
+};
+const PROP_KEYS = ["moon", "star", "stars", "sun", "cloud", "rocket", "planet", "bird", "owl", "tree", "apples", "flower", "butterfly", "boat", "fish", "chest", "palm", "camel", "cat", "house", "castle", "balloon", "book"];
+
+/* ---------- the hero ---------- */
+function heroSVG(h, x, y, s, id) {
+  const skin = SKINS[h.skin] || SKINS.fair, hair = HAIRS[h.hair] || HAIRS.black, shirt = SHIRTS[h.shirt] || SHIRTS.teal;
+  const st = `stroke="${OUTLINE}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"`;
+  const photo = h.mode === "photo" && h.face;
+  const girl = h.gender === "f";
+  let back = "", front = "", face = "";
+  const hy = -150; // head centre
+  if (!photo) {
+    if (h.style === "long") back = `<path d="M-42 ${hy} Q-46 ${hy - 50} 0 ${hy - 48} Q46 ${hy - 50} 42 ${hy} L46 ${hy + 62} Q0 ${hy + 74} -46 ${hy + 62}z" fill="${hair}" ${st}/>`;
+    if (h.style === "ponytail") back = `<path d="M30 ${hy - 30} q40 0 34 46 q-4 26 -18 34 q4 -30 -16 -50z" fill="${hair}" ${st}/><circle cx="34" cy="${hy - 28}" r="7" fill="${SHIRTS.saffron}" ${st}/>`;
+    if (h.style === "hijab") back = `<path d="M-50 ${hy + 6} Q-54 ${hy - 54} 0 ${hy - 54} Q54 ${hy - 54} 50 ${hy + 6} L56 ${hy + 66} Q0 ${hy + 84} -56 ${hy + 66}z" fill="${shirt}" ${st}/>`;
+    if (h.style === "short") front = `<path d="M-38 ${hy + 2} Q-44 ${hy - 46} 0 ${hy - 44} Q44 ${hy - 46} 38 ${hy + 2} Q34 ${hy - 22} 14 ${hy - 26} Q-4 ${hy - 16} -20 ${hy - 26} Q-34 ${hy - 20} -38 ${hy + 2}z" fill="${hair}" ${st}/>`;
+    if (h.style === "spiky") front = `<path d="M-38 ${hy + 2} L-44 ${hy - 30} L-28 ${hy - 36} L-26 ${hy - 54} L-8 ${hy - 44} L4 ${hy - 60} L14 ${hy - 44} L32 ${hy - 54} L30 ${hy - 34} L46 ${hy - 28} L38 ${hy + 2} Q30 ${hy - 20} 0 ${hy - 22} Q-30 ${hy - 20} -38 ${hy + 2}z" fill="${hair}" ${st}/>`;
+    if (h.style === "curly") front = [[-34, -14], [-28, -32], [-12, -42], [6, -44], [24, -36], [34, -18], [-38, 4], [38, 4]].map(([cx, cy]) => `<circle cx="${cx}" cy="${hy + cy}" r="14" fill="${hair}" ${st}/>`).join("");
+    if (h.style === "long" || h.style === "ponytail") front = `<path d="M-38 ${hy + 6} Q-44 ${hy - 46} 0 ${hy - 44} Q44 ${hy - 46} 38 ${hy + 6} Q36 ${hy - 18} 10 ${hy - 24} Q-16 ${hy - 10} -38 ${hy + 6}z" fill="${hair}" ${st}/>`;
+    if (h.style === "hijab") front = `<path d="M-40 ${hy - 6} Q0 ${hy - 50} 40 ${hy - 6}" fill="none" stroke="${OUTLINE}" stroke-width="3"/><path d="M-36 ${hy + 36} Q0 ${hy + 56} 36 ${hy + 36}" fill="none" stroke="${OUTLINE}" stroke-width="3"/>`;
+    const glasses = h.glasses ? `<g fill="none" stroke="${OUTLINE}" stroke-width="3"><circle cx="-13" cy="${hy - 2}" r="10"/><circle cx="13" cy="${hy - 2}" r="10"/><line x1="-3" y1="${hy - 2}" x2="3" y2="${hy - 2}"/></g>` : "";
+    face = `<circle cx="0" cy="${hy}" r="36" fill="${skin}" ${st}/>
+      <circle cx="-13" cy="${hy - 2}" r="4.5" fill="${OUTLINE}"/><circle cx="13" cy="${hy - 2}" r="4.5" fill="${OUTLINE}"/>
+      <circle cx="-11.5" cy="${hy - 3.5}" r="1.5" fill="#FFF"/><circle cx="14.5" cy="${hy - 3.5}" r="1.5" fill="#FFF"/>
+      <circle cx="-22" cy="${hy + 10}" r="6" fill="#F28B8B" opacity=".45"/><circle cx="22" cy="${hy + 10}" r="6" fill="#F28B8B" opacity=".45"/>
+      <path d="M-11 ${hy + 13} Q0 ${hy + 23} 11 ${hy + 13}" fill="none" stroke="${OUTLINE}" stroke-width="3" stroke-linecap="round"/>${glasses}`;
+  } else {
+    face = `<defs><clipPath id="${id}f"><circle cx="0" cy="${hy - 2}" r="44"/></clipPath></defs>
+      <image href="${h.face}" x="-44" y="${hy - 46}" width="88" height="88" clip-path="url(#${id}f)" preserveAspectRatio="xMidYMid slice"/>
+      <circle cx="0" cy="${hy - 2}" r="44" fill="none" stroke="${OUTLINE}" stroke-width="4"/>`;
+  }
+  const bottom = girl && h.style !== "spiky"
+    ? `<path d="M-34 -58 L34 -58 L42 -24 L-42 -24z" fill="${shirt}" ${st}/>`
+    : `<rect x="-28" y="-60" width="56" height="28" rx="6" fill="#33507A" ${st}/>`;
+  const body = `
+    <rect x="-20" y="-40" width="14" height="38" rx="6" fill="${girl ? skin : "#33507A"}" ${st}/><rect x="6" y="-40" width="14" height="38" rx="6" fill="${girl ? skin : "#33507A"}" ${st}/>
+    <ellipse cx="-14" cy="0" rx="14" ry="7" fill="#E0607A" ${st}/><ellipse cx="14" cy="0" rx="14" ry="7" fill="#E0607A" ${st}/>
+    ${bottom}
+    <path d="M-30 -112 Q-46 -84 -48 -58" fill="none" stroke="${shirt}" stroke-width="14" stroke-linecap="round"/><path d="M30 -112 Q46 -84 48 -58" fill="none" stroke="${shirt}" stroke-width="14" stroke-linecap="round"/>
+    <circle cx="-48" cy="-54" r="8" fill="${skin}" ${st}/><circle cx="48" cy="-54" r="8" fill="${skin}" ${st}/>
+    <path d="M-30 -116 Q0 -124 30 -116 L34 -56 L-34 -56z" fill="${shirt}" ${st}/>
+    ${star5(0, -88, 10, 4.5, "#FFF3C4")}`;
+  return `<g transform="translate(${x} ${y}) scale(${s})">${back}${body}${face}${front}</g>`;
+}
+
+function sceneSVG(scene, h, extraAttrs = "") {
+  const id = uid();
+  const bg = BG[scene.bg] || BG.garden;
+  const g = bg.ground;
+  const hx = 800 * Math.min(.85, Math.max(.15, Number(scene.heroX) || .5));
+  const props = (scene.props || []).filter(p => PROPS[p] || p === "boat");
+  const onBoat = props.includes("boat");
+  const anchors = Object.assign({
+    apples: [hx + 85, g], bird: [hx + 62, g - 72], cat: [hx - 90, g], book: [hx + 70, g - 50],
+    fish: [onBoat ? 640 : 620, onBoat ? 455 : g - 40], rocket: [hx < 400 ? hx + 170 : hx - 170, g - 80],
+    chest: [hx < 400 ? hx + 160 : hx - 160, g + 5], palm: [hx < 400 ? 640 : 180, g + 10], camel: [hx < 400 ? hx + 200 : hx - 200, g],
+    house: [hx < 400 ? 650 : 140, g], castle: [hx < 400 ? 650 : 150, g], tree: [hx < 400 ? 650 : 140, g + 5], flower: [hx < 400 ? 560 : 100, g + 4]
+  }, bg.anchors || {});
+  let s = `<svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg" ${extraAttrs}>` + bg.draw(id);
+  const boatX = hx, boatY = 420;
+  for (const p of props) {
+    if (p === "boat") { s += PROPS.boatBack(boatX + 20, boatY); continue; }
+    const a = anchors[p] || [];
+    s += PROPS[p](...a);
+  }
+  s += onBoat ? heroSVG(h, boatX - 50, boatY - 22, .95, id) : heroSVG(h, hx, g, 1.25, id);
+  if (onBoat) s += PROPS.boatFront(boatX, boatY);
+  return s + "</svg>";
+}
+
+/* ---------- cartoon filter (on device) ---------- */
+function cartoonize(img, zoom, ox, oy) {
+  const N = 240, c = document.createElement("canvas"); c.width = c.height = N;
+  const ctx = c.getContext("2d", { willReadFrequently: true });
+  const side = Math.min(img.naturalWidth, img.naturalHeight) / zoom;
+  const cx = img.naturalWidth / 2 + ox * (img.naturalWidth - side) / 2, cy = img.naturalHeight / 2 + oy * (img.naturalHeight - side) / 2;
+  ctx.drawImage(img, cx - side / 2, cy - side / 2, side, side, 0, 0, N, N);
+  const src = ctx.getImageData(0, 0, N, N), d = src.data;
+  // smooth: two passes of a 5x5 box blur
+  let buf = new Float32Array(d.length); for (let i = 0; i < d.length; i++) buf[i] = d[i];
+  for (let pass = 0; pass < 2; pass++) {
+    const out = new Float32Array(buf.length);
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      let r = 0, g = 0, b = 0, n = 0;
+      for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) {
+        const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= N || yy >= N) continue;
+        const k = (yy * N + xx) * 4; r += buf[k]; g += buf[k + 1]; b += buf[k + 2]; n++;
+      }
+      const k = (y * N + x) * 4; out[k] = r / n; out[k + 1] = g / n; out[k + 2] = b / n; out[k + 3] = 255;
+    }
+    buf = out;
+  }
+  // grayscale for edges
+  const gray = new Float32Array(N * N);
+  for (let i = 0; i < N * N; i++) gray[i] = .299 * buf[i * 4] + .587 * buf[i * 4 + 1] + .114 * buf[i * 4 + 2];
+  const L = 6, step = 255 / (L - 1);
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+    const k = (y * N + x) * 4;
+    let r = buf[k], g = buf[k + 1], b = buf[k + 2];
+    // boost saturation
+    const avg = (r + g + b) / 3; r = avg + (r - avg) * 1.35; g = avg + (g - avg) * 1.35; b = avg + (b - avg) * 1.35;
+    r = Math.round(r / step) * step; g = Math.round(g / step) * step; b = Math.round(b / step) * step;
+    let edge = 0;
+    if (x > 0 && y > 0 && x < N - 1 && y < N - 1) {
+      const G = (xx, yy) => gray[yy * N + xx];
+      const gx = -G(x - 1, y - 1) - 2 * G(x - 1, y) - G(x - 1, y + 1) + G(x + 1, y - 1) + 2 * G(x + 1, y) + G(x + 1, y + 1);
+      const gy = -G(x - 1, y - 1) - 2 * G(x, y - 1) - G(x + 1, y - 1) + G(x - 1, y + 1) + 2 * G(x, y + 1) + G(x + 1, y + 1);
+      edge = Math.hypot(gx, gy);
+    }
+    if (edge > 70) { r *= .25; g *= .25; b *= .3; }
+    d[k] = Math.max(0, Math.min(255, r)); d[k + 1] = Math.max(0, Math.min(255, g)); d[k + 2] = Math.max(0, Math.min(255, b)); d[k + 3] = 255;
+  }
+  ctx.putImageData(src, 0, 0);
+  return c.toDataURL("image/jpeg", .85);
+}
+
+/* ---------- UI helpers ---------- */
+const $ = id => document.getElementById(id);
+const t = k => T[lang][k];
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+  document.querySelectorAll("[data-t]").forEach(el => { const v = T[lang][el.dataset.t]; if (typeof v === "string") el.textContent = v; });
+  document.title = T[lang].brand;
+  document.querySelectorAll(".langs button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+  $("ai-theme").placeholder = t("themePh");
+  $("ai-value").innerHTML = t("values").map(v => `<option>${v}</option>`).join("");
+  buildHeroControls();
+  renderAll();
+  loadVoices();
+}
+function saveHero() { const { ...h } = hero; store.set("hero", h); }
+function showView(v) {
+  ["library", "hero", "reader"].forEach(n => { $("view-" + n).hidden = n !== v; $("tab-" + n).setAttribute("aria-selected", String(n === v)); });
+  if (v !== "reader") stopSpeech();
+  if (v === "reader" && !current) openStory(storyList()[0]);
+  window.scrollTo({ top: 0 });
+}
+
+function pills(el, items, isOn, onPick) {
+  el.innerHTML = "";
+  items.forEach(([val, label]) => {
+    const b = document.createElement("button"); b.type = "button"; b.textContent = label;
+    b.setAttribute("aria-pressed", String(isOn(val))); b.onclick = () => { onPick(val); };
+    el.append(b);
+  });
+}
+function swatches(el, map, key) {
+  el.innerHTML = "";
+  Object.entries(map).forEach(([k, c]) => {
+    const b = document.createElement("button"); b.type = "button"; b.style.background = c; b.title = k; b.setAttribute("aria-label", k);
+    b.setAttribute("aria-pressed", String(hero[key] === k)); b.onclick = () => setHero({ [key]: k });
+    el.append(b);
+  });
+}
+function buildHeroControls() {
+  $("h-name").value = hero.name;
+  pills($("h-gender"), [["m", t("boy")], ["f", t("girl")]], v => hero.gender === v, v => setHero({ gender: v }));
+  pills($("h-style"), STYLES.map(s => [s, t("styles")[s]]), v => hero.style === v, v => setHero({ style: v }));
+  pills($("h-extras"), [["glasses", t("glasses")]], () => hero.glasses, () => setHero({ glasses: !hero.glasses }));
+  pills($("h-mode"), [["drawn", t("modeDrawn")], ["photo", t("modePhoto")]], v => hero.mode === v, v => { if (v === "photo" && !hero.face) return; setHero({ mode: v }); });
+  $("h-mode").hidden = !hero.face;
+  swatches($("h-skin"), SKINS, "skin"); swatches($("h-hair"), HAIRS, "hair"); swatches($("h-shirt"), SHIRTS, "shirt");
+  $("h-photo-img").hidden = !hero.face; if (hero.face) $("h-photo-img").src = hero.face;
+  $("h-photo-clear").hidden = !hero.face;
+  $("h-adjust").hidden = !photoImg;
+  $("h-analyze").hidden = !(photoImg && sampleOK && imagesOK);
+}
+function setHero(patch, rebuild = true) {
+  Object.assign(hero, patch, { example: false });
+  saveHero();
+  if (rebuild) buildHeroControls();
+  renderAll();
+}
+
+function renderAll() {
+  $("hero-preview").outerHTML = sceneSVG({ bg: "garden", props: ["sun", "cloud", "butterfly"], heroX: .5 }, hero, 'id="hero-preview" role="img" aria-label="Hero preview"');
+  $("mini-hero").innerHTML = heroSVG(hero, 0, 0, 1, "mini");
+  $("strip-name").textContent = hero.name || "—";
+  $("strip-example").hidden = !hero.example;
+  const grid = $("story-grid"); grid.innerHTML = "";
+  for (const st of storyList()) {
+    const card = document.createElement("div"); card.className = "card"; card.tabIndex = 0; card.setAttribute("role", "button");
+    card.innerHTML = sceneSVG(st.scenes[0], hero, 'aria-hidden="true"') +
+      `<div class="meta"><span class="chip">${st.ai ? t("aiStory") : t("builtIn")}</span><h3></h3><p class="muted small">${t("pages")(st.scenes.length)}</p></div>`;
+    card.querySelector("h3").textContent = storyTitle(st);
+    if (st.ai) {
+      const del = document.createElement("button"); del.className = "btn alt"; del.type = "button"; del.textContent = t("delete");
+      del.style.alignSelf = "flex-start"; del.style.padding = "4px 12px"; del.style.fontSize = ".85rem";
+      del.onclick = e => { e.stopPropagation(); aiStories = aiStories.filter(s => s.id !== st.id); store.set("aiStories", aiStories); if (current && current.id === st.id) current = null; renderAll(); };
+      card.querySelector(".meta").append(del);
+    }
+    const open = () => { openStory(st); showView("reader"); };
+    card.onclick = open; card.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } };
+    grid.append(card);
+  }
+  if (current) { const again = storyList().find(s => s.id === current.id); if (again) { current = again; renderPage(); } else current = null; }
+}
+
+/* ---------- reader ---------- */
+function openStory(st) { stopSpeech(); current = st; pageIdx = 0; renderPage(); }
+let wordStarts = [];
+function renderPage() {
+  if (!current) return;
+  const sc = current.scenes[pageIdx];
+  $("r-title").textContent = storyTitle(current);
+  $("r-pic").innerHTML = sceneSVG(sc, hero, `role="img" aria-label="${t("page")(pageIdx + 1, current.scenes.length)}"`);
+  const text = sceneText(current, sc);
+  const box = $("r-text"); box.innerHTML = ""; wordStarts = [];
+  const re = /\S+/g; let m, last = 0;
+  while ((m = re.exec(text))) {
+    if (m.index > last) box.append(text.slice(last, m.index));
+    const sp = document.createElement("span"); sp.className = "w"; sp.textContent = m[0]; box.append(sp);
+    wordStarts.push([m.index, sp]); last = m.index + m[0].length;
+  }
+  $("r-dots").innerHTML = current.scenes.map((_, i) => `<i class="${i === pageIdx ? "on" : ""}"></i>`).join("");
+  $("r-prev").disabled = pageIdx === 0;
+  $("r-next").disabled = pageIdx === current.scenes.length - 1;
+}
+function go(d) {
+  if (!current) return;
+  const n = pageIdx + d; if (n < 0 || n >= current.scenes.length) return;
+  const wasSpeaking = speaking; stopSpeech(); pageIdx = n; renderPage(); if (wasSpeaking) speakPage();
+}
+
+let voices = [];
+const synth = window.speechSynthesis;
+function loadVoices() {
+  if (!synth) { $("r-voice-note").textContent = t("noVoice"); $("r-play").disabled = true; return; }
+  const pref = store.get("voice:" + lang, "");
+  voices = synth.getVoices().filter(v => v.lang && v.lang.toLowerCase().startsWith(lang));
+  const sel = $("r-voice");
+  sel.innerHTML = `<option value="">${t("defaultVoice")}</option>` + voices.map(v => `<option value="${v.voiceURI.replace(/"/g, "&quot;")}">${v.name} (${v.lang})</option>`).join("");
+  sel.value = voices.some(v => v.voiceURI === pref) ? pref : (voices[0] ? voices[0].voiceURI : "");
+  $("r-voice-note").textContent = voices.length ? "" : t("noVoice");
+}
+if (synth) synth.onvoiceschanged = loadVoices;
+function stopSpeech() {
+  speaking = false; if (synth) synth.cancel();
+  $("r-play").textContent = t("listen");
+  document.querySelectorAll(".page-text .w.on").forEach(e => e.classList.remove("on"));
+}
+function speakPage() {
+  if (!synth || !current) return;
+  synth.cancel();
+  const text = sceneText(current, current.scenes[pageIdx]);
+  // quote marks become spaces so character positions still match the shown words
+  const u = new SpeechSynthesisUtterance(text.replace(/[«»“”]/g, " "));
+  u.lang = SPEECH_LANG[lang];
+  const v = voices.find(v => v.voiceURI === $("r-voice").value); if (v) u.voice = v;
+  u.rate = Number($("r-rate").value);
+  u.onboundary = e => {
+    if (e.name && e.name !== "word") return;
+    document.querySelectorAll(".page-text .w.on").forEach(x => x.classList.remove("on"));
+    let hit = null; for (const [i, sp] of wordStarts) { if (i <= e.charIndex + 1) hit = sp; else break; }
+    if (hit) hit.classList.add("on");
+  };
+  u.onend = () => {
+    if (!speaking) return;
+    document.querySelectorAll(".page-text .w.on").forEach(x => x.classList.remove("on"));
+    if ($("r-auto").checked && pageIdx < current.scenes.length - 1) { pageIdx++; renderPage(); setTimeout(() => speaking && speakPage(), 500); }
+    else stopSpeech();
+  };
+  speaking = true; $("r-play").textContent = t("stopListen");
+  synth.speak(u);
+}
+
+/* ---------- Claude (sample capability) ---------- */
+let sample = null, sampleOK = false, imagesOK = false;
+(async () => {
+  try {
+    sample = window.claude ? await window.claude.use("sample") : null;
+    sampleOK = !!sample;
+    if (sample) { const lim = await sample.limits().catch(() => null); imagesOK = !!(lim && lim.images); }
+  } catch { sampleOK = false; }
+  if (!sampleOK) { $("ai-go").disabled = true; $("ai-status").textContent = t("noAI"); }
+  buildHeroControls();
+})();
+function errCopy(e) {
+  const c = e && e.code;
+  if (c === "rate_limited") return t("errRate");
+  if (c === "not_granted" || c === "sampling_disabled" || c === "capability_disabled") return t("errDenied");
+  return t("errGeneric");
+}
+
+let aiCtl = null;
+$("ai-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  if (!sample) return;
+  const theme = $("ai-theme").value.trim() || t("themePh");
+  const value = $("ai-value").value, age = Math.min(12, Math.max(2, Number($("ai-age").value) || 6));
+  const genderWord = hero.gender === "f" ? "a girl" : "a boy";
+  const prompt = `Write a short, warm bedtime story for a ${age}-year-old child, in ${LANG_NAME[lang]}.
+The hero is ${genderWord}. Always write the hero's name as the literal token NAME (never a real name).
+For every word that changes with the hero's gender (verbs, adjectives, pronouns), write both forms as {masculine/feminine}, for example ${lang === "ar" ? "{ذهب/ذهبت} NAME إلى {بيته/بيتها}" : lang === "fr" ? "NAME était {content/contente}" : "NAME smiled at {his/her} cat"}.
+Story idea: ${theme}
+Lesson to convey gently: ${value}
+Exactly 5 scenes, each 2 to 3 short, simple sentences. Age-appropriate, kind, no violence or fear beyond mild suspense.
+For each scene pick a background "bg" from: ${BG_KEYS.join(", ")}; up to 3 "props" from: ${PROP_KEYS.join(", ")}; and "heroX" between 0.25 and 0.75 (where the hero stands).
+Reply with only JSON: {"title": "...", "scenes": [{"text": "...", "bg": "...", "props": ["..."], "heroX": 0.4}]}`;
+  aiCtl = new AbortController();
+  $("ai-go").disabled = true; $("ai-stop").hidden = false; $("ai-status").className = "status"; $("ai-status").textContent = t("thinking");
+  try {
+    const data = await sample.json(prompt, { signal: aiCtl.signal, cache: false });
+    if (!data || !Array.isArray(data.scenes) || !data.scenes.length) throw { code: "invalid_json" };
+    const story = {
+      id: "ai" + Date.now(), lang, ai: true, title: String(data.title || "NAME"),
+      scenes: data.scenes.slice(0, 8).map(s => ({
+        text: String(s.text || ""), bg: BG[s.bg] ? s.bg : "garden",
+        props: (Array.isArray(s.props) ? s.props : []).filter(p => PROP_KEYS.includes(p)).slice(0, 3),
+        heroX: Math.min(.75, Math.max(.25, Number(s.heroX) || .5))
+      })).filter(s => s.text)
+    };
+    aiStories.unshift(story); store.set("aiStories", aiStories);
+    $("ai-status").textContent = t("done");
+    renderAll(); openStory(storyList()[0]); showView("reader");
+  } catch (err) {
+    if (err && err.code === "cancelled") $("ai-status").textContent = "";
+    else { $("ai-status").className = "status err"; $("ai-status").textContent = errCopy(err); }
+  } finally {
+    $("ai-go").disabled = !sampleOK; $("ai-stop").hidden = true; aiCtl = null;
+  }
+});
+$("ai-stop").onclick = () => aiCtl && aiCtl.abort();
+
+/* ---------- photo ---------- */
+function refreshFace() {
+  if (!photoImg) return;
+  const face = cartoonize(photoImg, Number($("h-zoom").value), Number($("h-ox").value), Number($("h-oy").value));
+  setHero({ face, mode: "photo" });
+}
+$("h-photo").addEventListener("change", e => {
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  const url = URL.createObjectURL(f), img = new Image();
+  img.onload = () => { photoImg = img; photoImg._file = f; $("h-status").className = "status"; $("h-status").textContent = ""; refreshFace(); };
+  img.onerror = () => { $("h-status").className = "status err"; $("h-status").textContent = t("photoErr"); };
+  img.src = url;
+});
+["h-zoom", "h-ox", "h-oy"].forEach(id => $(id).addEventListener("input", () => { clearTimeout(refreshFace._t); refreshFace._t = setTimeout(refreshFace, 60); }));
+$("h-photo-clear").onclick = () => { photoImg = null; $("h-photo").value = ""; setHero({ face: null, mode: "drawn" }); };
+$("h-analyze").onclick = async () => {
+  if (!sample || !photoImg) return;
+  const btn = $("h-analyze"); btn.disabled = true; $("h-status").className = "status"; $("h-status").textContent = t("analyzing");
+  try {
+    const r = await sample.json(`This photo shows a child. A parent wants a friendly cartoon character that resembles the child. Look only at visible appearance and pick the closest options.
+Reply with only JSON: {"skin": one of ${JSON.stringify(Object.keys(SKINS))}, "hair": one of ${JSON.stringify(Object.keys(HAIRS))}, "style": one of ${JSON.stringify(STYLES)}, "glasses": true or false}`,
+      { images: photoImg._file, modelTier: "quick" });
+    const patch = {};
+    if (SKINS[r.skin]) patch.skin = r.skin; if (HAIRS[r.hair]) patch.hair = r.hair; if (STYLES.includes(r.style)) patch.style = r.style;
+    if (typeof r.glasses === "boolean") patch.glasses = r.glasses;
+    setHero(patch);
+    $("h-status").textContent = t("analyzed");
+  } catch (err) { $("h-status").className = "status err"; $("h-status").textContent = errCopy(err); }
+  finally { btn.disabled = false; }
+};
+
+/* ---------- wiring ---------- */
+document.querySelectorAll("nav.tabs button").forEach(b => b.onclick = () => showView(b.dataset.view));
+document.querySelectorAll(".langs button").forEach(b => b.onclick = () => { stopSpeech(); lang = b.dataset.lang; store.set("lang", lang);
+  if (hero.example) hero.name = lang === "ar" ? "سلمى" : "Salma";
+  applyLang(); });
+$("go-hero").onclick = () => showView("hero");
+$("h-done").onclick = () => showView("library");
+$("h-name").addEventListener("input", e => setHero({ name: e.target.value.slice(0, 24) }, false));
+$("r-back").onclick = () => showView("library");
+$("r-prev").onclick = () => go(-1);
+$("r-next").onclick = () => go(1);
+$("r-play").onclick = () => speaking ? stopSpeech() : speakPage();
+$("r-voice").onchange = e => store.set("voice:" + lang, e.target.value);
+document.addEventListener("keydown", e => {
+  if ($("view-reader").hidden || /INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) return;
+  if (e.key === "ArrowLeft") go(lang === "ar" ? 1 : -1);
+  if (e.key === "ArrowRight") go(lang === "ar" ? -1 : 1);
+});
+applyLang();
+
+/* offline + install support */
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  navigator.serviceWorker.register("sw.js").catch(() => {});
+}
+</script>
+
+</body>
+</html>
