@@ -135,6 +135,23 @@ html:not([lang="ar"]) .page-text { font-family: var(--story-lat); line-height: 1
 .reader-title { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .reader-title h2 { margin-inline-end: auto; }
 
+.page-text.cover { text-align: center; font-family: var(--display); font-size: clamp(1.6rem, 4.5vw, 2.3rem); line-height: 1.5; }
+.page-text.end { white-space: pre-line; }
+.page-text .sub { display: block; font-family: var(--ui); font-size: 1rem; color: var(--ink-soft); margin-top: 6px; }
+.page-text .q { display: block; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); }
+.page-text .q b { display: block; font-family: var(--ui); font-size: .85rem; letter-spacing: .02em; color: var(--teal); }
+.tw { animation: tw 3.2s ease-in-out infinite; }
+@keyframes tw { 50% { opacity: .15; } }
+.drift { animation: drift 10s ease-in-out infinite alternate; }
+@keyframes drift { to { transform: translateX(28px); } }
+.bob { animation: bob 3.4s ease-in-out infinite; }
+@keyframes bob { 50% { transform: translateY(7px); } }
+.hop { animation: hop 2.8s ease-in-out infinite; }
+@keyframes hop { 50% { transform: translateY(-4px); } }
+.card svg * { animation: none !important; }
+.reader .pic svg { animation: pagein .35s ease-out; }
+@keyframes pagein { from { opacity: .3; } }
+
 @media (max-width: 720px) {
   .builder { grid-template-columns: 1fr; }
   .preview { position: static; max-width: 420px; }
@@ -286,7 +303,7 @@ const T = {
     thinking:"Claude يكتب القصة… قد يستغرق ذلك دقيقة.", done:"أُضيفت القصة إلى المكتبة.", noAI:"توليد القصص غير متاح في هذا العرض.",
     errGeneric:"تعذّر إنشاء القصة. جرّب مرة أخرى أو غيّر الفكرة.", errRate:"طلبات كثيرة، انتظر قليلاً ثم حاول.", errDenied:"لم يُسمح باستخدام Claude في هذه الصفحة.",
     analyzing:"Claude ينظر إلى الصورة…", analyzed:"تم ضبط الملامح من الصورة. يمكنك تعديلها.", noVoice:"لا يوجد صوت لهذه اللغة في جهازك. يمكنك إضافته من إعدادات «تحويل النص إلى كلام».",
-    defaultVoice:"الصوت الافتراضي", photoErr:"تعذّرت قراءة الصورة، جرّب صورة أخرى.", delete:"حذف" },
+    defaultVoice:"الصوت الافتراضي", theEnd:"النهاية", question:"سؤال للطفل", heroOf:n=>`بطل القصة: ${n}`, photoErr:"تعذّرت قراءة الصورة، جرّب صورة أخرى.", delete:"حذف" },
   fr: { brand:"Mon Histoire", tagline:"Des histoires dont votre enfant est le héros", tabLibrary:"Bibliothèque", tabHero:"Le héros", tabReader:"Lecture", example:"Exemple",
     stripHint:"Chaque histoire est écrite avec le prénom du héros et dessinée à son image.", editHero:"Modifier le héros", newStoryTitle:"Nouvelle histoire avec l'IA",
     newStoryHint:"Claude l'écrit dans la langue choisie et les scènes sont dessinées automatiquement.", theme:"Idée de l'histoire", value:"Valeur éducative", age:"Âge de l'enfant",
@@ -302,7 +319,7 @@ const T = {
     thinking:"Claude écrit l'histoire… cela peut prendre une minute.", done:"L'histoire a été ajoutée à la bibliothèque.", noAI:"La création d'histoires n'est pas disponible ici.",
     errGeneric:"Impossible de créer l'histoire. Réessayez ou changez l'idée.", errRate:"Trop de demandes, patientez un peu.", errDenied:"Claude n'est pas autorisé sur cette page.",
     analyzing:"Claude regarde la photo…", analyzed:"Les traits ont été réglés d'après la photo. Vous pouvez les modifier.", noVoice:"Aucune voix pour cette langue sur cet appareil. Ajoutez-en une dans les réglages de synthèse vocale.",
-    defaultVoice:"Voix par défaut", photoErr:"Impossible de lire cette photo, essayez-en une autre.", delete:"Supprimer" },
+    defaultVoice:"Voix par défaut", theEnd:"Fin", question:"Une question pour l'enfant", heroOf:n=>`Le héros : ${n}`, photoErr:"Impossible de lire cette photo, essayez-en une autre.", delete:"Supprimer" },
   en: { brand:"My Story", tagline:"Stories where your child is the hero", tabLibrary:"Library", tabHero:"Hero", tabReader:"Read", example:"Example",
     stripHint:"Every story is written with the hero's name and drawn in their likeness.", editHero:"Edit hero", newStoryTitle:"New story with AI",
     newStoryHint:"Claude writes it in the chosen language and the scenes are drawn automatically.", theme:"Story idea", value:"Lesson", age:"Child's age",
@@ -318,7 +335,7 @@ const T = {
     thinking:"Claude is writing the story… this can take a minute.", done:"The story was added to the library.", noAI:"Story writing isn't available in this view.",
     errGeneric:"Couldn't create the story. Try again or change the idea.", errRate:"Too many requests, wait a little and try again.", errDenied:"Claude isn't allowed on this page.",
     analyzing:"Claude is looking at the photo…", analyzed:"Features set from the photo. You can still adjust them.", noVoice:"No voice for this language on this device. Add one in your text-to-speech settings.",
-    defaultVoice:"Default voice", photoErr:"Couldn't read that photo, try another one.", delete:"Delete" }
+    defaultVoice:"Default voice", theEnd:"The End", question:"A question for your child", heroOf:n=>`Starring ${n}`, photoErr:"Couldn't read that photo, try another one.", delete:"Delete" }
 };
 const SPEECH_LANG = { ar: "ar-SA", fr: "fr-FR", en: "en-US" };
 const LANG_NAME = { ar: "Arabic (Modern Standard, simple, for children)", fr: "French", en: "English" };
@@ -415,6 +432,97 @@ const STORIES = [
     ] }
 ];
 
+
+STORIES.push(
+  { id: "desert", title: { ar: "NAME والجمل الحكيم", fr: "NAME et le chameau sage", en: "NAME and the Wise Camel" },
+    question: { ar: "لماذا {أعاد/أعادت} NAME الكيس إلى التاجر؟ وماذا {كنتَ ستفعل/كنتِ ستفعلين} أنت؟", fr: "Pourquoi NAME a-t-{il/elle} rendu le sac au marchand ? Et toi, qu'aurais-tu fait ?", en: "Why did NAME give the bag back to the merchant? What would you have done?" },
+    scenes: [
+      { bg: "desert", props: ["sun", "camel"], heroX: .32, mood: "happy", arms: "wave",
+        ar: "في الصحراء الذهبية، {التقى/التقت} NAME بجملٍ حكيم اسمه «رمّان»، يعرف كلّ دروب الرمال.",
+        fr: "Dans le désert doré, NAME rencontra un chameau très sage nommé Grenade, qui connaissait tous les chemins de sable.",
+        en: "In the golden desert, NAME met a wise camel named Pomegranate, who knew every path across the sand." },
+      { bg: "desert", props: ["camel", "palm", "sun"], heroX: .5, mood: "surprised",
+        ar: "قال رمّان: «خلف التلال واحةٌ جميلة، لكنّ الطريق طويل». {فمشى/فمشت} NAME بجانبه تحت الشمس الدافئة.",
+        fr: "« Il y a une belle oasis derrière les dunes, mais le chemin est long », dit Grenade. NAME marcha à côté de lui sous le soleil chaud.",
+        en: "“There's a lovely oasis beyond the dunes, but the way is long,” said Pomegranate. NAME walked beside him under the warm sun." },
+      { bg: "desert", props: ["chest", "camel"], heroX: .4, mood: "surprised",
+        ar: "في الطريق {وجد/وجدت} NAME كيساً فيه قطعٌ ذهبية لامعة. {فكّر/فكّرت} قليلاً ثم {قال/قالت}: «هذا ليس لي، يجب أن نعيده لصاحبه».",
+        fr: "En chemin, NAME trouva un sac rempli de pièces d'or brillantes. NAME réfléchit un instant puis dit : « Ce n'est pas à moi, il faut le rendre à son propriétaire. »",
+        en: "On the way, NAME found a bag full of shiny gold coins. NAME thought for a moment and said: “This isn't mine. We must give it back to its owner.”" },
+      { bg: "desert", props: ["palm", "house", "camel"], heroX: .45, mood: "happy",
+        ar: "في الواحة، كان تاجرٌ عجوز يبحث عن كيسه حزيناً. {فأعطاه/فأعطته} NAME الكيس، فابتسم وقال: «ما أجمل الأمانة!»",
+        fr: "À l'oasis, un vieux marchand cherchait tristement son sac. NAME le lui rendit, et il sourit : « Quelle belle honnêteté ! »",
+        en: "At the oasis, an old merchant was sadly looking for his bag. NAME gave it back, and he smiled: “What wonderful honesty!”" },
+      { bg: "desert", props: ["camel", "sun"], heroX: .35, mood: "joy", arms: "up",
+        ar: "أهدى التاجرُ NAME تمرةً حلوة وفانوساً صغيراً، {وعاد/وعادت} NAME مع رمّان {وقلبه/وقلبها} يلمع كالذهب.",
+        fr: "Le marchand offrit à NAME une datte sucrée et une petite lanterne, et NAME rentra avec Grenade, le cœur brillant comme de l'or.",
+        en: "The merchant gave NAME a sweet date and a little lantern, and NAME headed home with Pomegranate, {his/her} heart shining like gold." }
+    ] },
+  { id: "balloon", title: { ar: "NAME ومنطاد الألوان", fr: "NAME et la montgolfière", en: "NAME and the Rainbow Balloon" },
+    question: { ar: "كيف {استطاع/استطاعت} NAME تحرير المنطاد؟ ومتى {طلبتَ/طلبتِ} المساعدة من أصدقائك؟", fr: "Comment NAME a-t-{il/elle} libéré la montgolfière ? Quand as-tu demandé de l'aide à tes amis ?", en: "How did NAME free the balloon? When did you ask your friends for help?" },
+    scenes: [
+      { bg: "city", props: ["balloon", "cloud"], heroX: .35, mood: "surprised",
+        ar: "في صباح العيد، {رأى/رأت} NAME منطاداً كبيراً ملوّناً فوق المدينة، لكنّه كان عالقاً بين البنايات.",
+        fr: "Le matin de la fête, NAME vit une grande montgolfière colorée au-dessus de la ville, mais elle était coincée entre les immeubles.",
+        en: "On the morning of the festival, NAME saw a big colorful hot-air balloon above the city, but it was stuck between the buildings." },
+      { bg: "city", props: ["balloon", "cat"], heroX: .45, mood: "brave",
+        ar: "{حاول/حاولت} NAME أن {يشدّ/تشدّ} الحبل {وحده/وحدها}، لكنّه كان ثقيلاً جداً. {فقال/فقالت}: «سأطلب المساعدة من أصدقائي!»",
+        fr: "NAME essaya de tirer la corde {tout seul/toute seule}, mais elle était bien trop lourde. « Je vais demander de l'aide à mes amis ! »",
+        en: "NAME tried to pull the rope alone, but it was far too heavy. “I'll ask my friends for help!”" },
+      { bg: "city", props: ["balloon", "cat", "bird"], heroX: .45, mood: "brave", arms: "up",
+        ar: "جاء الجيران والأطفال وحتى القطّة الصغيرة، وأمسك الجميع بالحبل معاً: واحد، اثنان، ثلاثة… شُدّوا!",
+        fr: "Les voisins, les enfants et même le petit chat arrivèrent. Tout le monde attrapa la corde : un, deux, trois… tirez !",
+        en: "The neighbors, the children, and even the little cat came along. Everyone grabbed the rope together: one, two, three… pull!" },
+      { bg: "garden", props: ["balloon", "flower", "butterfly"], heroX: .35, mood: "joy", arms: "up",
+        ar: "تحرّر المنطاد وارتفع في السماء، وصفّق الجميع فرحاً. قال صاحب المنطاد: «تعالوا، سنطير معاً!»",
+        fr: "La montgolfière se libéra et s'éleva dans le ciel. Tout le monde applaudit. « Venez, on vole ensemble ! » dit le pilote.",
+        en: "The balloon broke free and rose into the sky, and everyone cheered. “Come on, let's fly together!” said the pilot." },
+      { bg: "city", props: ["balloon", "sun", "cloud"], heroX: .35, mood: "joy", arms: "wave",
+        ar: "من الأعلى {رأى/رأت} NAME المدينة كلّها تبتسم، {وعرف/وعرفت} أنّ ما يصعب على واحد يسهل على الجميع.",
+        fr: "De là-haut, NAME vit toute la ville sourire, et comprit que ce qui est difficile pour un seul devient facile ensemble.",
+        en: "From up high, NAME saw the whole city smiling, and understood that what is hard for one is easy for many." }
+    ] },
+  { id: "castle", title: { ar: "NAME وقلعة الحروف", fr: "NAME et le château des lettres", en: "NAME and the Castle of Letters" },
+    question: { ar: "ما الحرف الذي {تحبّه/تحبّينه} أكثر؟ وأين {كنتَ ستبحث/كنتِ ستبحثين} عنه؟", fr: "Quelle est ta lettre préférée ? Où l'aurais-tu cherchée ?", en: "What's your favorite letter? Where would you have looked for it?" },
+    scenes: [
+      { bg: "garden", props: ["castle", "butterfly"], heroX: .32, mood: "surprised",
+        ar: "خلف حديقة البيت، {اكتشف/اكتشفت} NAME قلعةً صغيرة لم يرها أحد من قبل، وعلى بابها مكتوب: «لا يدخل إلا من يحبّ أن يتعلّم».",
+        fr: "Derrière le jardin, NAME découvrit un petit château que personne n'avait jamais vu. Sur la porte, on pouvait lire : « N'entre ici que celui qui aime apprendre. »",
+        en: "Behind the garden, NAME discovered a little castle no one had ever seen. On its door was written: “Only those who love to learn may enter.”" },
+      { bg: "garden", props: ["castle", "book"], heroX: .32, mood: "joy", arms: "wave",
+        ar: "{قال/قالت} NAME: «أنا أحبّ أن أتعلّم!» فانفتح الباب، وطار منه كتابٌ صغير له جناحان.",
+        fr: "« Moi, j'aime apprendre ! » dit NAME. La porte s'ouvrit et un petit livre avec des ailes s'envola.",
+        en: "“I love to learn!” said NAME. The door opened, and out flew a little book with wings." },
+      { bg: "night", props: ["stars", "moon", "book"], heroX: .4, mood: "brave",
+        ar: "قال الكتاب: «حروفي هربت من صفحاتي في الليل، ساعدني لأجمعها». {فبحث/فبحثت} NAME عنها بين النجوم.",
+        fr: "« Mes lettres se sont échappées dans la nuit, aide-moi à les retrouver », dit le livre. NAME les chercha parmi les étoiles.",
+        en: "“My letters escaped into the night. Help me find them,” said the book. NAME searched for them among the stars." },
+      { bg: "garden", props: ["flower", "bird", "cloud", "book"], heroX: .4, mood: "joy", arms: "up",
+        ar: "{وجد/وجدت} NAME حرفاً تحت الوردة، وحرفاً عند العصفور، وحرفاً فوق الغيمة، حتى امتلأت الصفحات من جديد.",
+        fr: "NAME trouva une lettre sous la fleur, une près de l'oiseau, une autre sur un nuage, jusqu'à ce que les pages soient de nouveau pleines.",
+        en: "NAME found a letter under the flower, one by the bird, another on a cloud, until the pages were full again." },
+      { bg: "bedroom", props: ["moon", "star", "book"], heroX: .3, mood: "happy",
+        ar: "شكر الكتابُ NAME وقال: «كلّ حرفٍ {تتعلّمه/تتعلّمينه} يفتح لك باباً جديداً». ومنذ ذلك اليوم {صار/صارت} NAME {يقرأ/تقرأ} كلّ ليلة.",
+        fr: "Le livre remercia NAME : « Chaque lettre que tu apprends t'ouvre une nouvelle porte. » Depuis ce jour, NAME lit chaque soir.",
+        en: "The book thanked NAME: “Every letter you learn opens a new door for you.” Since that day, NAME reads every night." }
+    ] }
+);
+// expressions and poses for the first three stories, page by page
+const POSES = {
+  star: [["surprised"], ["brave", "wave"], ["joy", "wave"], ["joy", "up"], ["happy"]],
+  forest: [["happy", "wave"], ["surprised"], ["happy"], ["brave"], ["joy", "up"]],
+  sea: [["happy", "wave"], ["surprised"], ["brave"], ["joy", "up"], ["happy", "wave"]]
+};
+const QUESTIONS = {
+  star: { ar: "كيف {ساعد/ساعدت} NAME النجمة الصغيرة؟ ولو كان عندك صاروخ، إلى أين {ستطير/ستطيرين}؟", fr: "Comment NAME a-t-{il/elle} aidé la petite étoile ? Si tu avais une fusée, où irais-tu ?", en: "How did NAME help the little star? If you had a rocket, where would you fly?" },
+  forest: { ar: "ماذا {فعل/فعلت} NAME عندما {وجد/وجدت} العصفور؟ وكيف {تساعد/تساعدين} أنت الحيوانات؟", fr: "Qu'a fait NAME en trouvant l'oisillon ? Et toi, comment aides-tu les animaux ?", en: "What did NAME do when {he/she} found the baby bird? How do you help animals?" },
+  sea: { ar: "ماذا {قال/قالت} NAME عندما هبّت الريح؟ وما الذي يجعلك {شجاعاً/شجاعة}؟", fr: "Qu'a dit NAME quand le vent s'est levé ? Qu'est-ce qui te rend {courageux/courageuse} ?", en: "What did NAME say when the wind blew? What makes you feel brave?" }
+};
+for (const st of STORIES) {
+  if (QUESTIONS[st.id]) st.question = QUESTIONS[st.id];
+  (POSES[st.id] || []).forEach(([mood, arms], i) => Object.assign(st.scenes[i], { mood, arms }));
+}
+
 function personalize(t) {
   const nm = (hero.name || "").trim() || (lang === "ar" ? "البطل" : lang === "fr" ? "le héros" : "the hero");
   return String(t || "").replace(/\{([^{}\/]*)\/([^{}]*)\}/g, (m, a, b) => hero.gender === "f" ? b : a).replace(/NAME/g, nm);
@@ -425,6 +533,20 @@ function storyList() {
 }
 function sceneText(story, sc) { return personalize(story.ai ? sc.text : sc[lang]); }
 function storyTitle(story) { return personalize(story.ai ? story.title : story.title[lang]); }
+function storyQuestion(story) { return personalize(story.ai ? story.question : (story.question || {})[lang]); }
+const MOODS = ["happy", "joy", "surprised", "brave"], ARMS = ["down", "wave", "up"];
+// a story is read as: cover, its scenes, then an ending page with a question for the child
+function pagesOf(st) {
+  const sc = st.scenes, first = sc[0], last = sc[sc.length - 1];
+  return [{ kind: "cover", bg: first.bg, props: first.props, heroX: .5, mood: "joy", arms: "wave" },
+    ...sc.map(x => ({ kind: "scene", ...x })),
+    { kind: "end", bg: last.bg, props: last.props, heroX: last.heroX, mood: "joy", arms: "up" }];
+}
+function pageText(st, pg) {
+  if (pg.kind === "cover") return storyTitle(st);
+  if (pg.kind === "end") { const q = storyQuestion(st); return t("theEnd") + "." + (q ? "\n" + q : ""); }
+  return sceneText(st, pg);
+}
 
 /* ---------- SVG drawing ---------- */
 let uidN = 0;
@@ -437,8 +559,13 @@ function star5(cx, cy, R, r, fill, extra = "") {
 function rng(seed) { let s = seed; return () => (s = (s * 9301 + 49297) % 233280) / 233280; }
 function skyStars(n, seed, ymax, color = "#FFF6D0") {
   const r = rng(seed); let s = "";
-  for (let i = 0; i < n; i++) { const x = r() * 800, y = r() * ymax, k = .6 + r() * 1.8; s += `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${k.toFixed(1)}" fill="${color}" opacity="${(.5 + r() * .5).toFixed(2)}"/>`; }
+  for (let i = 0; i < n; i++) { const x = r() * 800, y = r() * ymax, k = .6 + r() * 1.8, tw = i % 3 === 0 ? ` class="tw" style="animation-delay:${(r() * 3).toFixed(1)}s"` : ""; s += `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${k.toFixed(1)}" fill="${color}" opacity="${(.5 + r() * .5).toFixed(2)}"${tw}/>`; }
   return s;
+}
+function tufts(seed, y0, y1, color) {
+  const r = rng(seed); let s = `<g stroke="${color}" stroke-width="3" fill="none" stroke-linecap="round">`;
+  for (let i = 0; i < 26; i++) { const x = r() * 800, y = y0 + r() * (y1 - y0); s += `<path d="M${(x - 6).toFixed(0)} ${y.toFixed(0)} q2 -10 6 -14 M${x.toFixed(0)} ${y.toFixed(0)} v-16 M${(x + 6).toFixed(0)} ${y.toFixed(0)} q-2 -10 -6 -14"/>`; }
+  return s + "</g>";
 }
 function grad(id, stops, vertical = true) {
   return `<linearGradient id="${id}" x1="0" y1="0" x2="${vertical ? 0 : 1}" y2="${vertical ? 1 : 0}">${stops.map(([o, c]) => `<stop offset="${o}" stop-color="${c}"/>`).join("")}</linearGradient>`;
@@ -450,18 +577,19 @@ function treeShape(x, y, s, c1, c2) {
 const BG = {
   garden: { ground: 440, draw: id => `<defs>${grad(id + "s", [[0, "#8FD3F2"], [1, "#DDF3FA"]])}</defs><rect width="800" height="500" fill="url(#${id}s)"/>
     <path d="M0 330 Q200 260 420 320 T800 300 V500 H0z" fill="#9ED37A"/><path d="M0 400 Q260 350 520 400 T800 390 V500 H0z" fill="#7CC160"/>
-    ${treeShape(90, 360, .9, "#5DA84A", "#4C9440")}${treeShape(720, 350, .8, "#5DA84A", "#4C9440")}` },
+    ${treeShape(90, 360, .9, "#5DA84A", "#4C9440")}${treeShape(720, 350, .8, "#5DA84A", "#4C9440")}${tufts(5, 420, 495, "#5E9F45")}
+    <g fill="#FFFFFF">${[[200, 470], [470, 485], [640, 465]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="4"/><circle cx="${x + 9}" cy="${y + 4}" r="4"/>`).join("")}</g>` },
   forest: { ground: 445, draw: id => `<defs>${grad(id + "s", [[0, "#A6DDEB"], [1, "#E6F5E1"]])}</defs><rect width="800" height="500" fill="url(#${id}s)"/>
     ${[40, 150, 260, 560, 670, 780].map((x, i) => treeShape(x, 340 + (i % 2) * 10, .9 + (i % 3) * .1, "#3F8A4A", "#357A40")).join("")}
     <path d="M0 380 Q400 350 800 380 V500 H0z" fill="#6DB356"/>
     ${treeShape(700, 450, 1.25, "#4E9F48", "#3F8E3F")}${treeShape(80, 455, 1.15, "#4E9F48", "#3F8E3F")}
-    <g fill="#F6D24A">${[[230, 470], [520, 480], [600, 462]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="5"/>`).join("")}</g>` },
+    ${tufts(9, 430, 495, "#4C9440")}<g fill="#F6D24A">${[[230, 470], [520, 480], [600, 462]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="5"/>`).join("")}</g>` },
   river: { ground: 440, draw: id => `<defs>${grad(id + "s", [[0, "#9ED8EE"], [1, "#E4F6EE"]])}</defs><rect width="800" height="500" fill="url(#${id}s)"/>
     <path d="M0 330 Q300 300 800 330 V500 H0z" fill="#79BC5C"/>
     <path d="M0 400 Q200 370 400 410 T800 395 V470 Q600 450 400 480 T0 470z" fill="#5BB4E0"/>
     <path d="M60 425 q30 -8 60 0 M300 440 q30 -8 60 0 M560 420 q30 -8 60 0" stroke="#D6F0FB" stroke-width="4" fill="none" stroke-linecap="round"/>
     <g fill="#A9A49B" stroke="${OUTLINE}" stroke-width="2">${[[180, 440], [260, 448], [340, 442], [420, 448], [500, 440]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="26" ry="10"/>`).join("")}</g>
-    ${treeShape(120, 340, .8, "#4E9F48", "#3F8E3F")}` },
+    ${treeShape(120, 340, .8, "#4E9F48", "#3F8E3F")}${tufts(13, 485, 500, "#5E9F45")}` },
   sea: { ground: 470, draw: id => `<defs>${grad(id + "s", [[0, "#7FCBF0"], [1, "#DDF2FB"]])}${grad(id + "w", [[0, "#3C9BD6"], [1, "#1F6FA8"]])}</defs><rect width="800" height="500" fill="url(#${id}s)"/>
     <rect y="300" width="800" height="200" fill="url(#${id}w)"/>
     <path d="M0 330 q25 -10 50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0" stroke="#BFE6F8" stroke-width="4" fill="none"/>
@@ -496,7 +624,9 @@ const BG = {
     <rect x="40" y="250" width="130" height="14" fill="#A5774D"/><rect x="55" y="214" width="16" height="36" fill="#E0607A"/><rect x="74" y="220" width="14" height="30" fill="#4A90D9"/><rect x="91" y="210" width="18" height="40" fill="#F2A93B"/>`,
     anchors: { moon: [670, 115, .55], star: [560, 210, .8] } },
   desert: { ground: 445, draw: id => `<defs>${grad(id + "s", [[0, "#F6C77B"], [1, "#FCEBC7"]])}</defs><rect width="800" height="500" fill="url(#${id}s)"/>
-    <path d="M0 340 Q220 280 430 340 T800 320 V500 H0z" fill="#E7B566"/><path d="M0 410 Q300 360 560 410 T800 400 V500 H0z" fill="#D9A04E"/>` },
+    <path d="M0 340 Q220 280 430 340 T800 320 V500 H0z" fill="#E7B566"/><path d="M0 410 Q300 360 560 410 T800 400 V500 H0z" fill="#D9A04E"/>
+    <g stroke="#C48A3C" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"><path d="M80 460 q40 -10 80 0"/><path d="M420 475 q40 -10 80 0"/><path d="M640 455 q40 -10 80 0"/></g>
+    <g transform="translate(110 400)" fill="#5DA84A" stroke="${OUTLINE}" stroke-width="3"><rect x="-10" y="-80" width="20" height="80" rx="10"/><path d="M-10 -40 h-16 a8 8 0 0 1 -8 -8 v-18 a7 7 0 0 1 14 0 v12 h10z"/><path d="M10 -50 h14 a8 8 0 0 0 8 -8 v-14 a7 7 0 0 0 -14 0 v8 h-8z"/></g>` },
   city: { ground: 450, draw: id => `<defs>${grad(id + "s", [[0, "#9AD2F0"], [1, "#E8F5FB"]])}</defs><rect width="800" height="500" fill="url(#${id}s)"/>
     ${[[20, 200, 90, "#F2A93B"], [120, 240, 80, "#4A90D9"], [210, 170, 100, "#E0607A"], [330, 230, 70, "#6BAF4A"], [520, 190, 90, "#8E5BA8"], [620, 250, 80, "#F2A93B"], [710, 210, 90, "#1F8A7E"]].map(([x, y, w, c]) =>
       `<rect x="${x}" y="${y}" width="${w}" height="${440 - y}" fill="${c}" stroke="${OUTLINE}" stroke-width="3"/>` + [0, 1, 2, 3].map(r => `<rect x="${x + 14}" y="${y + 20 + r * 50}" width="18" height="22" fill="#FFF3C4"/><rect x="${x + w - 32}" y="${y + 20 + r * 50}" width="18" height="22" fill="#FFF3C4"/>`).join("")).join("")}
@@ -506,10 +636,10 @@ const BG_KEYS = Object.keys(BG);
 
 const PROPS = {
   moon: (x = 680, y = 90, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})"><circle r="44" fill="#FFF1B8" stroke="${OUTLINE}" stroke-width="3"/><circle cx="-14" cy="-8" r="7" fill="#F2DE8E"/><circle cx="14" cy="12" r="5" fill="#F2DE8E"/><circle cx="-10" cy="4" r="3" fill="${OUTLINE}"/><circle cx="8" cy="-4" r="3" fill="${OUTLINE}"/><path d="M-10 16 q10 8 20 0" stroke="${OUTLINE}" stroke-width="3" fill="none" stroke-linecap="round"/></g>`,
-  star: (x = 560, y = 120, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})">${star5(0, 0, 38, 17, "#FFD54A", `stroke="${OUTLINE}" stroke-width="3" stroke-linejoin="round"`)}<circle cx="-7" cy="-2" r="3" fill="${OUTLINE}"/><circle cx="7" cy="-2" r="3" fill="${OUTLINE}"/><path d="M-6 7 q6 5 12 0" stroke="${OUTLINE}" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="-12" cy="5" r="3" fill="#F59A7A" opacity=".7"/><circle cx="12" cy="5" r="3" fill="#F59A7A" opacity=".7"/></g>`,
+  star: (x = 560, y = 120, s = 1) => `<g class="hop"><g transform="translate(${x} ${y}) scale(${s})">${star5(0, 0, 38, 17, "#FFD54A", `stroke="${OUTLINE}" stroke-width="3" stroke-linejoin="round"`)}<circle cx="-7" cy="-2" r="3" fill="${OUTLINE}"/><circle cx="7" cy="-2" r="3" fill="${OUTLINE}"/><path d="M-6 7 q6 5 12 0" stroke="${OUTLINE}" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="-12" cy="5" r="3" fill="#F59A7A" opacity=".7"/><circle cx="12" cy="5" r="3" fill="#F59A7A" opacity=".7"/></g></g>`,
   stars: () => { const r = rng(11); let s = ""; for (let i = 0; i < 12; i++) s += star5(60 + r() * 680, 40 + r() * 220, 12 + r() * 8, 5 + r() * 3, "#FFE27A", `stroke="${OUTLINE}" stroke-width="2"`); return s; },
   sun: (x = 690, y = 90) => `<g transform="translate(${x} ${y})"><g stroke="#FFB627" stroke-width="6" stroke-linecap="round">${[0, 45, 90, 135, 180, 225, 270, 315].map(a => `<line x1="0" y1="-58" x2="0" y2="-74" transform="rotate(${a})"/>`).join("")}</g><circle r="46" fill="#FFD24A" stroke="${OUTLINE}" stroke-width="3"/></g>`,
-  cloud: (x = 220, y = 90) => `<g transform="translate(${x} ${y})" fill="#FFFFFF" stroke="${OUTLINE}" stroke-width="3"><path d="M-60 20 q-30 0 -30 -22 q0 -24 30 -22 q8 -30 42 -24 q16 -22 44 -8 q30 -6 36 24 q28 2 26 26 q-2 26 -30 26z"/></g>`,
+  cloud: (x = 220, y = 90) => `<g class="drift"><g transform="translate(${x} ${y})" fill="#FFFFFF" stroke="${OUTLINE}" stroke-width="3"><path d="M-60 20 q-30 0 -30 -22 q0 -24 30 -22 q8 -30 42 -24 q16 -22 44 -8 q30 -6 36 24 q28 2 26 26 q-2 26 -30 26z"/></g></g>`,
   rocket: (x = 300, y = 300) => `<g transform="translate(${x} ${y})"><path d="M-14 70 q14 50 28 0z" fill="#FF8A3D"/><path d="M-8 70 q8 30 16 0z" fill="#FFE27A"/><path d="M-40 70 l20 -50 v50z M40 70 l-20 -50 v50z" fill="#E0607A" stroke="${OUTLINE}" stroke-width="3" stroke-linejoin="round"/><path d="M0 -110 C40 -70 34 20 24 70 H-24 C-34 20 -40 -70 0 -110z" fill="#F4F4F8" stroke="${OUTLINE}" stroke-width="3"/><circle cy="-30" r="16" fill="#7FCBF0" stroke="${OUTLINE}" stroke-width="3"/><path d="M-18 -78 Q0 -96 18 -78" fill="#E0607A" stroke="${OUTLINE}" stroke-width="3"/></g>`,
   planet: (x = 140, y = 130) => `<g transform="translate(${x} ${y})"><circle r="44" fill="#F2A93B" stroke="${OUTLINE}" stroke-width="3"/><path d="M-30 -10 q30 10 60 0" stroke="#D98A2B" stroke-width="6" fill="none"/><ellipse rx="78" ry="18" fill="none" stroke="#7FCBF0" stroke-width="7" transform="rotate(-15)"/></g>`,
   bird: (x = 600, y = 200) => `<g transform="translate(${x} ${y})"><ellipse rx="22" ry="18" fill="#4A90D9" stroke="${OUTLINE}" stroke-width="3"/><path d="M-4 -2 q-14 -4 -16 12 q14 0 16 -12z" fill="#3570B0" stroke="${OUTLINE}" stroke-width="2"/><path d="M20 -2 l12 4 l-12 4z" fill="#F2A93B" stroke="${OUTLINE}" stroke-width="2"/><circle cx="10" cy="-6" r="3" fill="${OUTLINE}"/></g>`,
@@ -533,7 +663,20 @@ const PROPS = {
 const PROP_KEYS = ["moon", "star", "stars", "sun", "cloud", "rocket", "planet", "bird", "owl", "tree", "apples", "flower", "butterfly", "boat", "fish", "chest", "palm", "camel", "cat", "house", "castle", "balloon", "book"];
 
 /* ---------- the hero ---------- */
-function heroSVG(h, x, y, s, id) {
+function mouth(mood, hy) {
+  if (mood === "joy") return `<path d="M-13 ${hy + 11} Q0 ${hy + 30} 13 ${hy + 11}z" fill="#8C2F3A" stroke="${OUTLINE}" stroke-width="3" stroke-linejoin="round"/><path d="M-7 ${hy + 19} q7 5 14 0" fill="#F28B8B"/>`;
+  if (mood === "surprised") return `<ellipse cx="0" cy="${hy + 17}" rx="6" ry="8" fill="#8C2F3A" stroke="${OUTLINE}" stroke-width="3"/>`;
+  if (mood === "brave") return `<path d="M-10 ${hy + 16} Q0 ${hy + 21} 10 ${hy + 14}" fill="none" stroke="${OUTLINE}" stroke-width="3.5" stroke-linecap="round"/>`;
+  return `<path d="M-11 ${hy + 13} Q0 ${hy + 23} 11 ${hy + 13}" fill="none" stroke="${OUTLINE}" stroke-width="3" stroke-linecap="round"/>`;
+}
+function brows(mood, hy) {
+  const c = `fill="none" stroke="${OUTLINE}" stroke-width="3" stroke-linecap="round"`;
+  if (mood === "surprised") return `<path d="M-19 ${hy - 16} q6 -6 12 -2 M7 ${hy - 18} q6 -4 12 2" ${c}/>`;
+  if (mood === "brave") return `<path d="M-19 ${hy - 14} l12 4 M7 ${hy - 10} l12 -4" ${c}/>`;
+  return "";
+}
+function heroSVG(h, x, y, s, id, pose = {}) {
+  const mood = pose.mood || "happy", arms = pose.arms || "down";
   const skin = SKINS[h.skin] || SKINS.fair, hair = HAIRS[h.hair] || HAIRS.black, shirt = SHIRTS[h.shirt] || SHIRTS.teal;
   const st = `stroke="${OUTLINE}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"`;
   const photo = h.mode === "photo" && h.face;
@@ -554,12 +697,19 @@ function heroSVG(h, x, y, s, id) {
       <circle cx="-13" cy="${hy - 2}" r="4.5" fill="${OUTLINE}"/><circle cx="13" cy="${hy - 2}" r="4.5" fill="${OUTLINE}"/>
       <circle cx="-11.5" cy="${hy - 3.5}" r="1.5" fill="#FFF"/><circle cx="14.5" cy="${hy - 3.5}" r="1.5" fill="#FFF"/>
       <circle cx="-22" cy="${hy + 10}" r="6" fill="#F28B8B" opacity=".45"/><circle cx="22" cy="${hy + 10}" r="6" fill="#F28B8B" opacity=".45"/>
-      <path d="M-11 ${hy + 13} Q0 ${hy + 23} 11 ${hy + 13}" fill="none" stroke="${OUTLINE}" stroke-width="3" stroke-linecap="round"/>${glasses}`;
+      ${mouth(mood, hy)}${brows(mood, hy)}${glasses}`;
   } else {
     face = `<defs><clipPath id="${id}f"><circle cx="0" cy="${hy - 2}" r="44"/></clipPath></defs>
       <image href="${h.face}" x="-44" y="${hy - 46}" width="88" height="88" clip-path="url(#${id}f)" preserveAspectRatio="xMidYMid slice"/>
       <circle cx="0" cy="${hy - 2}" r="44" fill="none" stroke="${OUTLINE}" stroke-width="4"/>`;
   }
+  const armPath = (side) => {
+    const k = side; // -1 left, 1 right
+    const up = arms === "up" || (arms === "wave" && k === 1);
+    return up
+      ? `<path d="M${30 * k} -112 Q${48 * k} -130 ${50 * k} -156" fill="none" stroke="${shirt}" stroke-width="14" stroke-linecap="round"/><circle cx="${51 * k}" cy="-162" r="8" fill="${skin}" ${st}/>`
+      : `<path d="M${30 * k} -112 Q${46 * k} -84 ${48 * k} -58" fill="none" stroke="${shirt}" stroke-width="14" stroke-linecap="round"/><circle cx="${48 * k}" cy="-54" r="8" fill="${skin}" ${st}/>`;
+  };
   const bottom = girl && h.style !== "spiky"
     ? `<path d="M-34 -58 L34 -58 L42 -24 L-42 -24z" fill="${shirt}" ${st}/>`
     : `<rect x="-28" y="-60" width="56" height="28" rx="6" fill="#33507A" ${st}/>`;
@@ -567,8 +717,7 @@ function heroSVG(h, x, y, s, id) {
     <rect x="-20" y="-40" width="14" height="38" rx="6" fill="${girl ? skin : "#33507A"}" ${st}/><rect x="6" y="-40" width="14" height="38" rx="6" fill="${girl ? skin : "#33507A"}" ${st}/>
     <ellipse cx="-14" cy="0" rx="14" ry="7" fill="#E0607A" ${st}/><ellipse cx="14" cy="0" rx="14" ry="7" fill="#E0607A" ${st}/>
     ${bottom}
-    <path d="M-30 -112 Q-46 -84 -48 -58" fill="none" stroke="${shirt}" stroke-width="14" stroke-linecap="round"/><path d="M30 -112 Q46 -84 48 -58" fill="none" stroke="${shirt}" stroke-width="14" stroke-linecap="round"/>
-    <circle cx="-48" cy="-54" r="8" fill="${skin}" ${st}/><circle cx="48" cy="-54" r="8" fill="${skin}" ${st}/>
+    ${armPath(-1)}${armPath(1)}
     <path d="M-30 -116 Q0 -124 30 -116 L34 -56 L-34 -56z" fill="${shirt}" ${st}/>
     ${star5(0, -88, 10, 4.5, "#FFF3C4")}`;
   return `<g transform="translate(${x} ${y}) scale(${s})">${back}${body}${face}${front}</g>`;
@@ -581,6 +730,7 @@ function sceneSVG(scene, h, extraAttrs = "") {
   const hx = 800 * Math.min(.85, Math.max(.15, Number(scene.heroX) || .5));
   const props = (scene.props || []).filter(p => PROPS[p] || p === "boat");
   const onBoat = props.includes("boat");
+  const boatX = hx, boatY = 420;
   const anchors = Object.assign({
     apples: [hx + 85, g], bird: [hx + 62, g - 72], cat: [hx - 90, g], book: [hx + 70, g - 50],
     fish: [onBoat ? 640 : 620, onBoat ? 455 : g - 40], rocket: [hx < 400 ? hx + 170 : hx - 170, g - 80],
@@ -588,14 +738,16 @@ function sceneSVG(scene, h, extraAttrs = "") {
     house: [hx < 400 ? 650 : 140, g], castle: [hx < 400 ? 650 : 150, g], tree: [hx < 400 ? 650 : 140, g + 5], flower: [hx < 400 ? 560 : 100, g + 4]
   }, bg.anchors || {});
   let s = `<svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg" ${extraAttrs}>` + bg.draw(id);
-  const boatX = hx, boatY = 420;
+  // boat group goes last so the hero can stand inside it; the props before it are drawn first
+  const boatOpen = () => `<g class="bob">` + PROPS.boatBack(boatX + 20, boatY);
   for (const p of props) {
-    if (p === "boat") { s += PROPS.boatBack(boatX + 20, boatY); continue; }
+    if (p === "boat") continue;
     const a = anchors[p] || [];
     s += PROPS[p](...a);
   }
-  s += onBoat ? heroSVG(h, boatX - 50, boatY - 22, .95, id) : heroSVG(h, hx, g, 1.25, id);
-  if (onBoat) s += PROPS.boatFront(boatX, boatY);
+  const pose = { mood: scene.mood, arms: scene.arms };
+  if (onBoat) s += boatOpen() + heroSVG(h, boatX - 50, boatY - 22, .95, id, pose) + PROPS.boatFront(boatX, boatY) + "</g>";
+  else s += `<ellipse cx="${hx}" cy="${g + 2}" rx="58" ry="10" fill="#000" opacity=".14"/>` + heroSVG(h, hx, g, 1.25, id, pose);
   return s + "</svg>";
 }
 
@@ -705,7 +857,7 @@ function setHero(patch, rebuild = true) {
 }
 
 function renderAll() {
-  $("hero-preview").outerHTML = sceneSVG({ bg: "garden", props: ["sun", "cloud", "butterfly"], heroX: .5 }, hero, 'id="hero-preview" role="img" aria-label="Hero preview"');
+  $("hero-preview").outerHTML = sceneSVG({ bg: "garden", props: ["sun", "cloud", "butterfly"], heroX: .5, mood: "joy", arms: "wave" }, hero, 'id="hero-preview" role="img" aria-label="Hero preview"');
   $("mini-hero").innerHTML = heroSVG(hero, 0, 0, 1, "mini");
   $("strip-name").textContent = hero.name || "—";
   $("strip-example").hidden = !hero.example;
@@ -733,24 +885,32 @@ function openStory(st) { stopSpeech(); current = st; pageIdx = 0; renderPage(); 
 let wordStarts = [];
 function renderPage() {
   if (!current) return;
-  const sc = current.scenes[pageIdx];
+  const pages = pagesOf(current), sc = pages[pageIdx];
   $("r-title").textContent = storyTitle(current);
-  $("r-pic").innerHTML = sceneSVG(sc, hero, `role="img" aria-label="${t("page")(pageIdx + 1, current.scenes.length)}"`);
-  const text = sceneText(current, sc);
+  $("r-pic").innerHTML = sceneSVG(sc, hero, `role="img" aria-label="${t("page")(pageIdx + 1, pages.length)}"`);
+  const text = pageText(current, sc);
   const box = $("r-text"); box.innerHTML = ""; wordStarts = [];
+  box.className = "page-text" + (sc.kind === "cover" ? " cover" : sc.kind === "end" ? " end" : "");
   const re = /\S+/g; let m, last = 0;
   while ((m = re.exec(text))) {
     if (m.index > last) box.append(text.slice(last, m.index));
     const sp = document.createElement("span"); sp.className = "w"; sp.textContent = m[0]; box.append(sp);
     wordStarts.push([m.index, sp]); last = m.index + m[0].length;
   }
-  $("r-dots").innerHTML = current.scenes.map((_, i) => `<i class="${i === pageIdx ? "on" : ""}"></i>`).join("");
+  if (sc.kind === "cover") { const sub = document.createElement("span"); sub.className = "sub"; sub.textContent = t("heroOf")(personalize("NAME")); box.append(sub); }
+  if (sc.kind === "end" && box.childNodes.length > 1) {
+    // move the question words into their own labelled block
+    const q = document.createElement("span"); q.className = "q"; const lab = document.createElement("b"); lab.textContent = t("question"); q.append(lab);
+    const nodes = [...box.childNodes]; const cut = nodes.findIndex(n => n.nodeType === 3 && n.textContent.includes("\n"));
+    if (cut >= 0) { nodes.slice(cut + 1).forEach(n => q.append(n)); box.append(q); }
+  }
+  $("r-dots").innerHTML = pages.map((_, i) => `<i class="${i === pageIdx ? "on" : ""}"></i>`).join("");
   $("r-prev").disabled = pageIdx === 0;
-  $("r-next").disabled = pageIdx === current.scenes.length - 1;
+  $("r-next").disabled = pageIdx === pages.length - 1;
 }
 function go(d) {
   if (!current) return;
-  const n = pageIdx + d; if (n < 0 || n >= current.scenes.length) return;
+  const n = pageIdx + d; if (n < 0 || n >= pagesOf(current).length) return;
   const wasSpeaking = speaking; stopSpeech(); pageIdx = n; renderPage(); if (wasSpeaking) speakPage();
 }
 
@@ -774,7 +934,7 @@ function stopSpeech() {
 function speakPage() {
   if (!synth || !current) return;
   synth.cancel();
-  const text = sceneText(current, current.scenes[pageIdx]);
+  const text = pageText(current, pagesOf(current)[pageIdx]);
   // quote marks become spaces so character positions still match the shown words
   const u = new SpeechSynthesisUtterance(text.replace(/[«»“”]/g, " "));
   u.lang = SPEECH_LANG[lang];
@@ -789,7 +949,7 @@ function speakPage() {
   u.onend = () => {
     if (!speaking) return;
     document.querySelectorAll(".page-text .w.on").forEach(x => x.classList.remove("on"));
-    if ($("r-auto").checked && pageIdx < current.scenes.length - 1) { pageIdx++; renderPage(); setTimeout(() => speaking && speakPage(), 500); }
+    if ($("r-auto").checked && pageIdx < pagesOf(current).length - 1) { pageIdx++; renderPage(); setTimeout(() => speaking && speakPage(), 500); }
     else stopSpeech();
   };
   speaking = true; $("r-play").textContent = t("stopListen");
@@ -827,19 +987,21 @@ For every word that changes with the hero's gender (verbs, adjectives, pronouns)
 Story idea: ${theme}
 Lesson to convey gently: ${value}
 Exactly 5 scenes, each 2 to 3 short, simple sentences. Age-appropriate, kind, no violence or fear beyond mild suspense.
-For each scene pick a background "bg" from: ${BG_KEYS.join(", ")}; up to 3 "props" from: ${PROP_KEYS.join(", ")}; and "heroX" between 0.25 and 0.75 (where the hero stands).
-Reply with only JSON: {"title": "...", "scenes": [{"text": "...", "bg": "...", "props": ["..."], "heroX": 0.4}]}`;
+For each scene pick a background "bg" from: ${BG_KEYS.join(", ")}; up to 3 "props" from: ${PROP_KEYS.join(", ")}; "heroX" between 0.25 and 0.75 (where the hero stands); the hero's face "mood" from: ${MOODS.join(", ")}; and "arms" from: ${ARMS.join(", ")}.
+Also write one short, open "question" to ask the child after the story (same NAME and {masculine/feminine} rules).
+Reply with only JSON: {"title": "...", "question": "...", "scenes": [{"text": "...", "bg": "...", "props": ["..."], "heroX": 0.4, "mood": "happy", "arms": "down"}]}`;
   aiCtl = new AbortController();
   $("ai-go").disabled = true; $("ai-stop").hidden = false; $("ai-status").className = "status"; $("ai-status").textContent = t("thinking");
   try {
     const data = await sample.json(prompt, { signal: aiCtl.signal, cache: false });
     if (!data || !Array.isArray(data.scenes) || !data.scenes.length) throw { code: "invalid_json" };
     const story = {
-      id: "ai" + Date.now(), lang, ai: true, title: String(data.title || "NAME"),
+      id: "ai" + Date.now(), lang, ai: true, title: String(data.title || "NAME"), question: String(data.question || ""),
       scenes: data.scenes.slice(0, 8).map(s => ({
         text: String(s.text || ""), bg: BG[s.bg] ? s.bg : "garden",
         props: (Array.isArray(s.props) ? s.props : []).filter(p => PROP_KEYS.includes(p)).slice(0, 3),
-        heroX: Math.min(.75, Math.max(.25, Number(s.heroX) || .5))
+        heroX: Math.min(.75, Math.max(.25, Number(s.heroX) || .5)),
+        mood: MOODS.includes(s.mood) ? s.mood : "happy", arms: ARMS.includes(s.arms) ? s.arms : "down"
       })).filter(s => s.text)
     };
     aiStories.unshift(story); store.set("aiStories", aiStories);

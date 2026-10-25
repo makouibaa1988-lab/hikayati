@@ -1,5 +1,5 @@
 // App shell cache so the stories keep working offline.
-const CACHE = "hikayati-v1";
+const CACHE = "hikayati-v2";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icons/icon.svg", "icons/icon-192.png", "icons/icon-512.png"];
 
 self.addEventListener("install", e => {
